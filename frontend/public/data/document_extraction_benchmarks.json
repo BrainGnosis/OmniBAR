@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2025-10-02T02:14:11.524091+00:00",
+  "iterations": [
+    {
+      "id": "iter1",
+      "label": "Iteration 1",
+      "strategy": "Zero-shot baseline prompt",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 27.6,
+      "avg_output_tokens": 412,
+      "scores": {
+        "content": 0.58,
+        "structure": 0.56,
+        "completeness": 0.52,
+        "accuracy": 0.54,
+        "overall": 0.55
+      }
+    },
+    {
+      "id": "iter2",
+      "label": "Iteration 2",
+      "strategy": "Few-shot with schema hints",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 31.2,
+      "avg_output_tokens": 534,
+      "scores": {
+        "content": 0.72,
+        "structure": 0.73,
+        "completeness": 0.68,
+        "accuracy": 0.7,
+        "overall": 0.7075
+      }
+    },
+    {
+      "id": "iter3",
+      "label": "Iteration 3",
+      "strategy": "Tool-augmented extraction",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 35.8,
+      "avg_output_tokens": 601,
+      "scores": {
+        "content": 0.82,
+        "structure": 0.84,
+        "completeness": 0.8,
+        "accuracy": 0.83,
+        "overall": 0.8225
+      }
+    },
+    {
+      "id": "iter4",
+      "label": "Iteration 4",
+      "strategy": "Hybrid prompt + retrieval notes",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 38.4,
+      "avg_output_tokens": 648,
+      "scores": {
+        "content": 0.88,
+        "structure": 0.9,
+        "completeness": 0.86,
+        "accuracy": 0.89,
+        "overall": 0.8825
+      }
+    }
+  ]
+}

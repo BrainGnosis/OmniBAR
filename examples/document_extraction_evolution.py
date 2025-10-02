@@ -30,6 +30,8 @@ Usage:
 """
 
 import asyncio
+import json
+from datetime import datetime
 from pathlib import Path
 
 
@@ -290,6 +292,10 @@ async def test_document_extraction_evolution():
     # Test extraction completeness - Do extractions contain key research elements?
     results = {}
 
+    run_root = Path("runs")
+    dated_folder = run_root / datetime.now().strftime("%Y-%m-%d_%H%M%S")
+    dated_folder.mkdir(parents=True, exist_ok=True)
+
     for iteration in prompt_iterations:
         print(f"\n📝 Testing: {iteration['name']}")
 
@@ -355,6 +361,18 @@ async def test_document_extraction_evolution():
 
         print(f"📊 {iteration['name']} Results:")
         benchmarker.print_logger_summary()
+
+        # Persist detailed run logs for later inspection
+        try:
+            iteration_slug = iteration['name'].lower().replace(' ', '_').replace(':', '')
+            output_path = dated_folder / f"{iteration_slug}.json"
+            payload = benchmarker.logger.to_json(include_evaluations=True)
+            if isinstance(payload, str):
+                output_path.write_text(payload, encoding="utf-8")
+            else:
+                output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        except Exception as persist_error:
+            print(f"⚠️ Failed to save run log for {iteration['name']}: {persist_error}")
 
     # Display comparison results
     print("\n" + "=" * 80)

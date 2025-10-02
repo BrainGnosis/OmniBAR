@@ -1,0 +1,138 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 219 32% 12%;
+
+    --heading: 218 65% 12%;
+    --body: 217 12% 40%;
+    --muted-foreground-strong: 217 11% 48%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 219 32% 12%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 219 32% 12%;
+
+    --primary: 221 100% 58%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 44% 96%;
+    --secondary-foreground: 219 32% 12%;
+
+    --muted: 217 38% 96%;
+    --muted-foreground: 217 16% 45%;
+
+    --accent: 221 100% 58%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 1 84% 63%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 216 32% 90%;
+    --input: 216 32% 90%;
+    --ring: 221 100% 58%;
+
+    --radius: 0.75rem;
+
+    --chart-1: 145 69% 47%;
+    --chart-2: 27 95% 53%;
+    --chart-3: 240 67% 45%;
+    --chart-4: 199 89% 57%;
+    --chart-5: 336 82% 60%;
+  }
+
+  .dark {
+    --background: 219 32% 8%;
+    --foreground: 0 0% 98%;
+
+    --heading: 0 0% 96%;
+    --body: 218 15% 70%;
+    --muted-foreground-strong: 218 17% 68%;
+
+    --card: 219 32% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 219 32% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 221 100% 70%;
+    --primary-foreground: 219 32% 12%;
+
+    --secondary: 219 30% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 219 30% 18%;
+    --muted-foreground: 218 10% 62%;
+
+    --accent: 221 100% 66%;
+    --accent-foreground: 219 32% 12%;
+
+    --destructive: 358 75% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 219 28% 22%;
+    --input: 219 28% 22%;
+    --ring: 221 100% 70%;
+    --chart-1: 150 69% 60%;
+    --chart-2: 45 98% 55%;
+    --chart-3: 260 84% 65%;
+    --chart-4: 201 100% 58%;
+    --chart-5: 343 82% 65%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-[16px] font-normal leading-relaxed antialiased;
+    color: hsl(var(--body));
+  }
+  h1 {
+    @apply text-[2.25rem] font-semibold leading-snug tracking-tight;
+    color: hsl(var(--heading));
+  }
+  h2 {
+    @apply text-[1.75rem] font-semibold leading-snug tracking-tight;
+    color: hsl(var(--heading));
+  }
+  h3 {
+    @apply text-[1.5rem] font-medium leading-snug;
+    color: hsl(var(--heading));
+  }
+  p {
+    color: hsl(var(--body));
+  }
+  strong {
+    @apply font-semibold;
+    color: hsl(var(--muted-foreground-strong));
+  }
+  a {
+    @apply font-medium underline-offset-4 transition-colors;
+    color: hsl(var(--accent));
+  }
+  a:hover {
+    color: hsl(var(--accent-foreground));
+    text-decoration: underline;
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--accent));
+    outline-offset: 4px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+}
