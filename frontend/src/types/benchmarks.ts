@@ -97,4 +97,5 @@ export type RunHistoryEntry = {
   failed: number;
   success: number;
   status: 'success' | 'needs_attention';
+  threshold?: number | null;
 };

@@ -1,0 +1,5 @@
+#!/bin/bash
+source /Users/ash/Desktop/OmniBAR/.venv/bin/activate
+export PYTHONPATH="/Users/ash/Desktop/OmniBAR:$PYTHONPATH"
+export OPENAI_API_KEY="sk-proj-…"  # replace with real key or prompt for read
+uvicorn backend.app:app --reload --port 8000 "$@"

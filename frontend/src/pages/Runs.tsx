@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { getRecentRuns } from '@/lib/api';
+import { Button } from '@/components/ui/button';
+import { clearRunHistory, getRecentRuns, runLLMSmokeTest } from '@/lib/api';
 import type { RunHistoryEntry } from '@/types/benchmarks';
 
 const STATUS_BADGE: Record<RunHistoryEntry['status'], { label: string; variant: 'success' | 'warning' | 'destructive' | 'default' }> = {
@@ -11,37 +12,69 @@ const STATUS_BADGE: Record<RunHistoryEntry['status'], { label: string; variant: 
   needs_attention: { label: 'Needs Attention', variant: 'destructive' }
 };
 
+function formatThreshold(threshold?: number | null): string {
+  if (!Number.isFinite(threshold) || threshold == null) {
+    return '—';
+  }
+  return `${Math.round(threshold * 100)}%`;
+}
+
 export default function Runs() {
   const [runs, setRuns] = useState<RunHistoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clearing, setClearing] = useState(false);
+  const [smokeRunning, setSmokeRunning] = useState(false);
+  const [smokeMessage, setSmokeMessage] = useState<string | null>(null);
+
+  const loadRuns = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getRecentRuns();
+      setRuns(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to load run history');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const data = await getRecentRuns();
-        if (mounted) {
-          setRuns(data);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(err instanceof Error ? err.message : 'Unable to load run history');
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
+    void loadRuns();
   }, []);
 
   const latest = runs[0];
+
+  const handleClearHistory = async () => {
+    if (!confirm('Delete local run history? This clears backend/data/run_history.json.')) {
+      return;
+    }
+    setClearing(true);
+    try {
+      await clearRunHistory();
+      setRuns([]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unable to clear history');
+    } finally {
+      setClearing(false);
+    }
+  };
+
+  const handleSmokeTest = async () => {
+    setSmokeRunning(true);
+    setSmokeMessage(null);
+    try {
+      const result = await runLLMSmokeTest();
+      setSmokeMessage(`LLM responded "${result.output}" in ${result.latency.toFixed(2)}s`);
+      await loadRuns();
+    } catch (error) {
+      setSmokeMessage(error instanceof Error ? error.message : 'Smoke test failed');
+      await loadRuns();
+    } finally {
+      setSmokeRunning(false);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -51,6 +84,15 @@ export default function Runs() {
           Track which suites you executed, when they were requested, and how many objectives passed or failed.
           This data is appended every time you launch a suite from the Control Room.
         </p>
+        <div className="flex flex-wrap items-center gap-3 pt-2">
+          <Button onClick={handleClearHistory} variant="destructive" disabled={clearing}>
+            {clearing ? 'Clearing…' : 'Clear Run History'}
+          </Button>
+          <Button onClick={handleSmokeTest} variant="secondary" disabled={smokeRunning}>
+            {smokeRunning ? 'Running Smoke Test…' : 'Run LLM Smoke Test'}
+          </Button>
+        </div>
+        {smokeMessage ? <p className="text-xs text-muted-foreground">{smokeMessage}</p> : null}
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
@@ -83,6 +125,9 @@ export default function Runs() {
                 })()}
                 <p className="text-xs text-muted-foreground">
                   Requested {new Date(latest.requestedAt).toLocaleString()}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  Threshold at run: {formatThreshold(latest.threshold)}
                 </p>
               </>
             ) : (
@@ -129,6 +174,7 @@ export default function Runs() {
                     <TableHead>Benchmarks</TableHead>
                     <TableHead>Successes</TableHead>
                     <TableHead>Failures</TableHead>
+                    <TableHead>Threshold</TableHead>
                     <TableHead>Requested At</TableHead>
                     <TableHead>Snapshot Generated</TableHead>
                   </TableRow>
@@ -150,6 +196,7 @@ export default function Runs() {
                         <TableCell>{run.benchmarkCount}</TableCell>
                         <TableCell>{run.success}</TableCell>
                         <TableCell>{run.failed}</TableCell>
+                        <TableCell>{formatThreshold(run.threshold)}</TableCell>
                         <TableCell>{new Date(run.requestedAt).toLocaleString()}</TableCell>
                         <TableCell>{run.generatedAt ? new Date(run.generatedAt).toLocaleString() : '—'}</TableCell>
                       </TableRow>

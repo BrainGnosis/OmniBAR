@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from 'react';
 import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { ShieldCheckIcon, BoltIcon } from '@heroicons/react/24/solid';
 
@@ -7,6 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { BenchmarkCard, TeamCard, JobCard } from '@/components/design/cards';
 import { useBenchmarkStore } from '@/stores/benchmarkStore';
 import { cn } from '@/lib/utils';
+import { getStoredThreshold, setStoredThreshold, getDefaultThreshold } from '@/lib/threshold';
+import { getLLMHealth } from '@/lib/api';
+
+const LLM_HEALTH_MODEL = import.meta.env.VITE_LLM_HEALTH_MODEL ?? 'gpt-4o-mini';
 
 const SUITE_OPTIONS = [
   {
@@ -39,9 +44,84 @@ const SUITE_OPTIONS = [
 
 export default function ControlRoom() {
   const { fetchBenchmarks, loading, error, summary } = useBenchmarkStore();
+  const [threshold, setThreshold] = useState(() => getStoredThreshold());
+  const [llmStatus, setLLMStatus] = useState<'idle' | 'loading' | 'ok' | 'down'>('idle');
+  const [llmLatency, setLLMLatency] = useState<number | null>(null);
+  const [llmMessage, setLLMMessage] = useState<string>('');
+
+  useEffect(() => {
+    void fetchBenchmarks('output');
+  }, [fetchBenchmarks]);
+
+  useEffect(() => {
+    setStoredThreshold(threshold);
+    const params = new URLSearchParams(window.location.search);
+    params.set('threshold', threshold.toFixed(2));
+    const query = params.toString();
+    const url = `${window.location.pathname}${query ? `?${query}` : ''}`;
+    window.history.replaceState(null, '', url);
+    window.dispatchEvent(new CustomEvent('omnibar-threshold', { detail: { value: threshold } }));
+  }, [threshold]);
 
   const runSuite = (suiteId: string) => {
     void fetchBenchmarks(suiteId);
+  };
+
+  const handleThresholdChange = (value: number) => {
+    if (!Number.isFinite(value)) return;
+    const clamped = Math.min(Math.max(value, 0.1), 1);
+    setThreshold(Number(clamped.toFixed(2)));
+  };
+
+  const fetchLLMStatus = async () => {
+    setLLMStatus('loading');
+    setLLMLatency(null);
+    setLLMMessage('');
+    try {
+      const health = await getLLMHealth();
+      setLLMStatus(health.status === 'ok' ? 'ok' : 'down');
+      setLLMLatency(health.latency);
+      setLLMMessage(health.output);
+    } catch (error) {
+      setLLMStatus('down');
+      setLLMMessage(error instanceof Error ? error.message : 'Unable to reach LLM endpoint');
+    }
+  };
+
+  useEffect(() => {
+    void fetchLLMStatus();
+  }, []);
+
+  const quickGlance = useMemo(
+    () => [
+      { label: 'Benchmarks tracked', value: summary.total, tone: 'text-brand-primary' },
+      { label: 'Passing', value: summary.success, tone: 'text-emerald-600' },
+      { label: 'Needs attention', value: summary.failed, tone: 'text-red-600' }
+    ],
+    [summary]
+  );
+
+  const renderLLMStatus = () => {
+    switch (llmStatus) {
+      case 'loading':
+        return <span className="text-sm text-muted-foreground">Pinging LLM…</span>;
+      case 'ok':
+        return (
+          <div className="flex flex-col text-sm text-emerald-600">
+            <span>LLM reachable · latency {llmLatency ? `${llmLatency.toFixed(2)}s` : '—'}</span>
+            <span className="text-xs text-muted-foreground">Output: {llmMessage}</span>
+          </div>
+        );
+      case 'down':
+        return (
+          <div className="flex flex-col text-sm text-destructive">
+            <span>LLM unreachable</span>
+            {llmMessage ? <span className="text-xs text-muted-foreground">{llmMessage}</span> : null}
+          </div>
+        );
+      default:
+        return <span className="text-sm text-muted-foreground">LLM status unknown.</span>;
+    }
   };
 
   return (
@@ -93,47 +173,53 @@ export default function ControlRoom() {
           </div>
         </section>
 
-        {error ? (
-          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
-            {error}
-          </div>
-        ) : null}
-
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Next Steps</CardTitle>
-              <CardDescription>Use the navigation to review the freshest benchmark roster or run log.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-3 text-sm text-muted-foreground">
-              <p>
-                Benchmarks tab &rarr; full roster, latencies, and cost traces from the latest snapshot you trigger here.
+        <section className="rounded-2xl border bg-card/80 p-6 shadow-sm">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold text-[hsl(var(--heading))]">Reliability Threshold</h2>
+              <p className="text-sm text-muted-foreground">
+                Scores below this value will be treated as failures across dashboards. Default is {getDefaultThreshold().toFixed(2)}.
               </p>
-              <p>Runs tab &rarr; every historical suite execution with successes, failures, and timestamps.</p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Snapshot Quick Glance</CardTitle>
-              <CardDescription>High-level counts from the most recent run.</CardDescription>
-            </CardHeader>
-            <CardContent className="flex items-center gap-6 text-sm">
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Benchmarks tracked</p>
-                <p className="text-2xl font-semibold text-brand-primary">{summary.total}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Passing</p>
-                <p className="text-2xl font-semibold text-emerald-600">{summary.success}</p>
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-wide text-muted-foreground">Needs attention</p>
-                <p className="text-2xl font-semibold text-red-600">{summary.failed}</p>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+            <div className="flex w-full max-w-sm items-center gap-3">
+              <input
+                aria-label="Reliability threshold"
+                type="range"
+                min="0.1"
+                max="1"
+                step="0.05"
+                value={threshold}
+                onChange={(event) => handleThresholdChange(Number(event.target.value))}
+                className="grow"
+              />
+              <input
+                aria-label="Threshold value"
+                type="number"
+                min="0.1"
+                max="1"
+                step="0.01"
+                value={threshold}
+                onChange={(event) => handleThresholdChange(Number(event.target.value))}
+                className="w-20 rounded-md border bg-background px-2 py-1 text-right text-sm"
+              />
+            </div>
+          </div>
         </section>
 
+        <Card className="border bg-card/80 p-6 shadow-sm">
+          <CardHeader className="flex flex-col gap-2">
+            <CardTitle>LLM Connectivity</CardTitle>
+            <CardDescription>Quick health check using {LLM_HEALTH_MODEL}.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm">
+            {renderLLMStatus()}
+            <div>
+              <Button variant="secondary" onClick={fetchLLMStatus} disabled={llmStatus === 'loading'}>
+                {llmStatus === 'loading' ? 'Checking…' : 'Retry Health Check'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
         <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {SUITE_OPTIONS.map((suite) => (
             <Card key={suite.id} className="h-full border-brand-primary/10">
@@ -190,6 +276,12 @@ export default function ControlRoom() {
           <div className="flex items-center justify-center gap-2 rounded-md border border-dashed p-4 text-sm text-muted-foreground">
             <ArrowPathIcon className="h-4 w-4 animate-spin" />
             Launching suite run...
+          </div>
+        ) : null}
+
+        {error ? (
+          <div className="rounded-md border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
+            {error}
           </div>
         ) : null}
       </main>

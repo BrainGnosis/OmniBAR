@@ -1,10 +1,26 @@
 [
   {
-    "id": "a6cf2969-7852-4d34-943b-1e77241512ec",
+    "id": "5c0f9558-fe05-4bb6-8dcc-60474c712242",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T05:39:25.698495+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 2.206107965001138,
+      "output": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}"
+    },
+    "benchmarkCount": 1,
+    "failed": 1,
+    "success": 0,
+    "status": "needs_attention",
+    "threshold": null
+  },
+  {
+    "id": "428a4041-5aeb-42f6-bd74-7627fd66d70b",
     "suite": "output",
     "suiteLabel": "Output",
-    "requestedAt": "2025-10-02T02:09:14.017511+00:00",
-    "generatedAt": "2025-10-02T02:09:14.016286+00:00",
+    "requestedAt": "2025-10-02T05:39:20.329013+00:00",
+    "generatedAt": "2025-10-02T05:39:20.323327+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -13,14 +29,100 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.75
   },
   {
-    "id": "6abae964-6279-400b-80f0-88c42479fe4e",
+    "id": "b1ce8c1f-cc7d-4c6d-ae3f-c32af262c3f8",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:39:20.314809+00:00",
+    "generatedAt": "2025-10-02T05:39:19.381402+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "76329a81-ec18-45cd-9ea1-18cb523b4e96",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:33:18.438835+00:00",
+    "generatedAt": "2025-10-02T05:33:18.437171+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "7f544e49-53d7-4cdf-b292-0c57668643dd",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:33:18.421325+00:00",
+    "generatedAt": "2025-10-02T05:33:18.419197+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "6e555238-6308-4ed0-9c30-dd487e8cab14",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:30:01.243903+00:00",
+    "generatedAt": "2025-10-02T05:30:01.239498+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "2ddbb079-d141-4cc9-a663-55f6f87a8600",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:30:01.236284+00:00",
+    "generatedAt": "2025-10-02T05:30:01.229626+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "d84560e5-d84a-4547-9168-bfc8e95e46e0",
     "suite": "crisis",
     "suiteLabel": "Crisis",
-    "requestedAt": "2025-10-02T02:09:08.817237+00:00",
-    "generatedAt": "2025-10-02T02:09:08.816454+00:00",
+    "requestedAt": "2025-10-02T04:50:26.387445+00:00",
+    "generatedAt": "2025-10-02T04:50:26.386626+00:00",
     "summary": {
       "total": 1,
       "success": 0,
@@ -29,30 +131,15 @@
     "benchmarkCount": 1,
     "failed": 1,
     "success": 0,
-    "status": "needs_attention"
+    "status": "needs_attention",
+    "threshold": 0.75
   },
   {
-    "id": "849911c5-2958-4a12-89b4-7c5b1514329c",
-    "suite": "custom",
-    "suiteLabel": "Custom",
-    "requestedAt": "2025-10-02T02:09:07.348579+00:00",
-    "generatedAt": "2025-10-02T02:09:07.347476+00:00",
-    "summary": {
-      "total": 3,
-      "success": 3,
-      "failed": 0
-    },
-    "benchmarkCount": 3,
-    "failed": 0,
-    "success": 3,
-    "status": "success"
-  },
-  {
-    "id": "57a6e953-a956-44a8-a3bc-825a7ba3408b",
+    "id": "38263eca-17dd-4fff-bee9-dffd9ebe2abb",
     "suite": "output",
     "suiteLabel": "Output",
-    "requestedAt": "2025-10-02T02:09:05.661737+00:00",
-    "generatedAt": "2025-10-02T02:09:05.660364+00:00",
+    "requestedAt": "2025-10-02T04:50:20.644035+00:00",
+    "generatedAt": "2025-10-02T04:50:20.640578+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -61,14 +148,32 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.75
   },
   {
-    "id": "9ffb6d27-9163-4dd3-b0f3-8970649d43d6",
+    "id": "3d5c8f80-5f34-4d69-ae89-3e32534cbe66",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:50:20.636818+00:00",
+    "generatedAt": "2025-10-02T04:50:20.631346+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "bd40bfb8-fefe-4a5d-99dd-c615e8fc4627",
     "suite": "all",
     "suiteLabel": "All",
-    "requestedAt": "2025-10-02T02:09:02.884170+00:00",
-    "generatedAt": "2025-10-02T02:09:02.852508+00:00",
+    "requestedAt": "2025-10-02T04:48:13.721526+00:00",
+    "generatedAt": "2025-10-02T04:48:13.719435+00:00",
     "summary": {
       "total": 8,
       "success": 7,
@@ -77,58 +182,15 @@
     "benchmarkCount": 8,
     "failed": 1,
     "success": 7,
-    "status": "needs_attention"
+    "status": "needs_attention",
+    "threshold": 0.75
   },
   {
-    "id": "a5ddc089-be68-48d9-ba88-48f9dd65811d",
-    "suite": "all",
-    "requestedAt": "2025-10-02T02:04:28.970244+00:00",
-    "generatedAt": "2025-10-02T02:04:28.968434+00:00",
-    "summary": {
-      "total": 8,
-      "success": 7,
-      "failed": 1
-    },
-    "benchmarkCount": 8,
-    "failed": 1,
-    "success": 7,
-    "status": "needs_attention"
-  },
-  {
-    "id": "6c3651d7-d8e5-405e-acd0-c6367caba435",
-    "suite": "crisis",
-    "requestedAt": "2025-10-02T02:04:27.034557+00:00",
-    "generatedAt": "2025-10-02T02:04:27.033919+00:00",
-    "summary": {
-      "total": 1,
-      "success": 0,
-      "failed": 1
-    },
-    "benchmarkCount": 1,
-    "failed": 1,
-    "success": 0,
-    "status": "needs_attention"
-  },
-  {
-    "id": "6c183825-0b63-4282-af01-d8c0058cf1ac",
-    "suite": "custom",
-    "requestedAt": "2025-10-02T02:04:26.101098+00:00",
-    "generatedAt": "2025-10-02T02:04:26.100295+00:00",
-    "summary": {
-      "total": 3,
-      "success": 3,
-      "failed": 0
-    },
-    "benchmarkCount": 3,
-    "failed": 0,
-    "success": 3,
-    "status": "success"
-  },
-  {
-    "id": "4f4b7c5b-b433-477b-9154-ceec022d774c",
+    "id": "c4dcfdbb-66c5-4184-9c14-4006bb618e75",
     "suite": "output",
-    "requestedAt": "2025-10-02T02:04:25.403219+00:00",
-    "generatedAt": "2025-10-02T02:04:25.401092+00:00",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:45:05.323971+00:00",
+    "generatedAt": "2025-10-02T04:45:05.322252+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -137,13 +199,15 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.8
   },
   {
-    "id": "04d9b229-c069-4ece-9c6c-11b7418088cc",
+    "id": "6c7303e0-7a1c-4460-9ef2-4c1612f414f9",
     "suite": "output",
-    "requestedAt": "2025-10-02T02:02:56.852133+00:00",
-    "generatedAt": "2025-10-02T02:02:56.847849+00:00",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:45:05.309633+00:00",
+    "generatedAt": "2025-10-02T04:45:05.294708+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -152,28 +216,15 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.8
   },
   {
-    "id": "cbda0ee4-f66b-400a-8ff6-96a8b93ff109",
-    "suite": "all",
-    "requestedAt": "2025-10-02T02:01:55.411261+00:00",
-    "generatedAt": "2025-10-02T02:01:55.409188+00:00",
-    "summary": {
-      "total": 8,
-      "success": 7,
-      "failed": 1
-    },
-    "benchmarkCount": 8,
-    "failed": 1,
-    "success": 7,
-    "status": "needs_attention"
-  },
-  {
-    "id": "02bcb348-7753-4056-8968-9fcb55f0ebbb",
+    "id": "9bdab06f-e588-465b-b421-68a5126ec377",
     "suite": "output",
-    "requestedAt": "2025-10-02T01:59:52.588778+00:00",
-    "generatedAt": "2025-10-02T01:59:52.584164+00:00",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:39:06.556346+00:00",
+    "generatedAt": "2025-10-02T04:39:06.554206+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -182,13 +233,15 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.8
   },
   {
-    "id": "da0f4a8b-f184-40e6-ac78-0809355ede48",
+    "id": "635edbbf-6a95-4a80-a98b-0d64af9d93ba",
     "suite": "output",
-    "requestedAt": "2025-10-02T01:57:15.472553+00:00",
-    "generatedAt": "2025-10-02T01:57:15.470484+00:00",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:39:06.553377+00:00",
+    "generatedAt": "2025-10-02T04:39:06.550690+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -197,13 +250,15 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.8
   },
   {
-    "id": "0f081d29-aa32-4986-a5cc-2940af2c364f",
+    "id": "be291bd3-4e08-4dc6-b990-893b1c29f43b",
     "suite": "output",
-    "requestedAt": "2025-10-02T01:57:15.472166+00:00",
-    "generatedAt": "2025-10-02T01:57:15.468952+00:00",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:59.916663+00:00",
+    "generatedAt": "2025-10-02T04:20:59.915344+00:00",
     "summary": {
       "total": 4,
       "success": 4,
@@ -212,6 +267,92 @@
     "benchmarkCount": 4,
     "failed": 0,
     "success": 4,
-    "status": "success"
+    "status": "success",
+    "threshold": 0.8
+  },
+  {
+    "id": "5d8c1e71-1631-4fbc-ad81-17a0dd37a597",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:55.192090+00:00",
+    "generatedAt": "2025-10-02T04:20:55.188827+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.6
+  },
+  {
+    "id": "7550e543-a4eb-474e-8b1c-1d70297114f2",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:55.185668+00:00",
+    "generatedAt": "2025-10-02T04:20:55.182374+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.6
+  },
+  {
+    "id": "e8800347-ceca-4d5a-9597-f7877fa0ea5b",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:42.731450+00:00",
+    "generatedAt": "2025-10-02T04:20:42.730551+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.6
+  },
+  {
+    "id": "21b7729e-12dc-4c41-b6a9-0041ae7e78bc",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:41.089415+00:00",
+    "generatedAt": "2025-10-02T04:20:41.086340+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.6
+  },
+  {
+    "id": "eae9fcec-ef4f-41b0-891c-417fd63a9b90",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T04:20:41.086606+00:00",
+    "generatedAt": "2025-10-02T04:20:41.082788+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.6
   }
 ]

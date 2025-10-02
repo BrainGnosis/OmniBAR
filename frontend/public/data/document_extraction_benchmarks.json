@@ -14,7 +14,54 @@
         "completeness": 0.52,
         "accuracy": 0.54,
         "overall": 0.55
-      }
+      },
+      "metadata": {
+        "summary": "Pure instructions, no exemplars. Misses nested tables and multi-line addresses—baseline for comparison.",
+        "promptHighlights": ["Zero-shot", "No schema hints", "High hallucination risk"],
+        "radar": [
+          { "metric": "Entity Recall", "value": 0.52 },
+          { "metric": "Line-item Accuracy", "value": 0.46 },
+          { "metric": "Date Normalisation", "value": 0.62 },
+          { "metric": "Currency Handling", "value": 0.49 },
+          { "metric": "Layout Robustness", "value": 0.44 }
+        ]
+      },
+      "sample": "I'm sorry, but the document format prevented me from extracting the totals.",
+      "judgeNotes": [
+        "Misses secondary address block and misreads the PO box number.",
+        "Line item quantity parsed correctly, but unit cost formatting drifted.",
+        "Requested structured JSON, but response mixed snake_case and camelCase keys."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.32,
+          "input": "Invoice 1049",
+          "output": "{\"vendor\":\"Unknown\"}",
+          "notes": "Vendor and totals missing."
+        },
+        {
+          "name": "Structure",
+          "score": 0.28,
+          "input": "Expected JSON schema",
+          "output": "Narrative paragraphs",
+          "notes": "Output not JSON."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.30,
+          "input": "Checklist",
+          "output": "Omitted limitations section",
+          "notes": "Failed to capture summary fields."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.27,
+          "input": "Line item totals",
+          "output": "$18,400",
+          "notes": "Rounded incorrectly."
+        }
+      ]
     },
     {
       "id": "iter2",
@@ -27,9 +74,56 @@
         "content": 0.72,
         "structure": 0.73,
         "completeness": 0.68,
-        "accuracy": 0.7,
+        "accuracy": 0.70,
         "overall": 0.7075
-      }
+      },
+      "metadata": {
+        "summary": "Adds exemplars plus schema spec. Stronger consistency, still volatile currency rounding in narration.",
+        "promptHighlights": ["Two exemplars", "Explicit schema keys", "Validation checklist"],
+        "radar": [
+          { "metric": "Entity Recall", "value": 0.68 },
+          { "metric": "Line-item Accuracy", "value": 0.65 },
+          { "metric": "Date Normalisation", "value": 0.79 },
+          { "metric": "Currency Handling", "value": 0.58 },
+          { "metric": "Layout Robustness", "value": 0.63 }
+        ]
+      },
+      "sample": "{\"vendor\":{\"name\":\"Northwind Supplies\"},\"total_due\":18430.11}",
+      "judgeNotes": [
+        "Schema compliance improved; casing consistent with contract.",
+        "Currency normalisation still returns stringified amounts in narration paragraph.",
+        "Exemplar referencing improved reasoning trace clarity."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.55,
+          "input": "Invoice 1049",
+          "output": "{\"vendor\":\"Northwind Supplies\"}",
+          "notes": "Basic vendor info captured."
+        },
+        {
+          "name": "Structure",
+          "score": 0.50,
+          "input": "Expected JSON schema",
+          "output": "Partial JSON",
+          "notes": "Arrays unordered."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.58,
+          "input": "Checklist",
+          "output": "Adds methodology",
+          "notes": "Still missing future work."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.52,
+          "input": "Line item totals",
+          "output": "$18,430.10",
+          "notes": "Close but off by rounding."
+        }
+      ]
     },
     {
       "id": "iter3",
@@ -41,10 +135,79 @@
       "scores": {
         "content": 0.82,
         "structure": 0.84,
-        "completeness": 0.8,
+        "completeness": 0.80,
         "accuracy": 0.83,
         "overall": 0.8225
-      }
+      },
+      "metadata": {
+        "summary": "Introduces table extractor tool and regex guards. Strong gains on line-items.",
+        "promptHighlights": ["Tool-assisted extraction", "Regex guards", "Confidence tags"],
+        "radar": [
+          { "metric": "Entity Recall", "value": 0.83 },
+          { "metric": "Line-item Accuracy", "value": 0.82 },
+          { "metric": "Date Normalisation", "value": 0.86 },
+          { "metric": "Currency Handling", "value": 0.78 },
+          { "metric": "Layout Robustness", "value": 0.74 }
+        ]
+      },
+      "sample": "{\"invoice_number\":\"INV-1049\",\"totals\":{\"total_due\":18430.11}}",
+      "judgeNotes": [
+        "Tool call preserved table order; no hallucinated rows detected.",
+        "Regex guard caught stray percentage sign and forced retry—excellent.",
+        "Recommended adding business-rule: freight lines must be tagged as optional."
+      ],
+      "agents": [
+        {
+          "agent": "Tool Augmented",
+          "scores": {
+            "content": 0.68,
+            "structure": 0.80,
+            "completeness": 0.70,
+            "accuracy": 0.62,
+            "overall": 0.70
+          }
+        },
+        {
+          "agent": "Tool Augmented v2",
+          "scores": {
+            "content": 0.65,
+            "structure": 0.78,
+            "completeness": 0.69,
+            "accuracy": 0.60,
+            "overall": 0.68
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.68,
+          "input": "Invoice narrative",
+          "output": "Table extracted",
+          "notes": "Captures all key rows."
+        },
+        {
+          "name": "Structure",
+          "score": 0.80,
+          "input": "JSON schema",
+          "output": "Valid JSON",
+          "notes": "Schema adhered."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.70,
+          "input": "Checklist",
+          "output": "Includes limitations",
+          "notes": "Missing future work bullet."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.62,
+          "input": "Totals",
+          "output": "Accurate values",
+          "notes": "Minor paraphrasing."
+        }
+      ]
     },
     {
       "id": "iter4",
@@ -55,11 +218,80 @@
       "avg_output_tokens": 648,
       "scores": {
         "content": 0.88,
-        "structure": 0.9,
+        "structure": 0.90,
         "completeness": 0.86,
         "accuracy": 0.89,
         "overall": 0.8825
-      }
+      },
+      "metadata": {
+        "summary": "Final iteration leveraging historical corrections and validator feedback. Production candidate.",
+        "promptHighlights": ["Retrieval context", "Validator critique loop", "Cost cap reminders"],
+        "radar": [
+          { "metric": "Entity Recall", "value": 0.88 },
+          { "metric": "Line-item Accuracy", "value": 0.89 },
+          { "metric": "Date Normalisation", "value": 0.92 },
+          { "metric": "Currency Handling", "value": 0.85 },
+          { "metric": "Layout Robustness", "value": 0.82 }
+        ]
+      },
+      "sample": "{\"bibliographic\":{\"title\":\"Why Language Models Hallucinate\"},\"results\":{\"Hallucination Reduction\":0.41}}",
+      "judgeNotes": [
+        "Extraction aligns with validator corrections—no remaining schema drift.",
+        "Consider trimming retrieval context: 30% of tokens are redundant headers.",
+        "Confidence scores tracked across line-items and totals—great for monitoring."
+      ],
+      "agents": [
+        {
+          "agent": "Hybrid",
+          "scores": {
+            "content": 0.78,
+            "structure": 0.88,
+            "completeness": 0.82,
+            "accuracy": 0.76,
+            "overall": 0.81
+          }
+        },
+        {
+          "agent": "Hybrid + Retrieval",
+          "scores": {
+            "content": 0.80,
+            "structure": 0.90,
+            "completeness": 0.84,
+            "accuracy": 0.79,
+            "overall": 0.83
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.78,
+          "input": "Prompt iteration 4",
+          "output": "Complete JSON",
+          "notes": "Ready for production."
+        },
+        {
+          "name": "Structure",
+          "score": 0.88,
+          "input": "JSON schema",
+          "output": "Fully compliant",
+          "notes": "Strong consistency."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.82,
+          "input": "Checklist",
+          "output": "All sections captured",
+          "notes": "Meets acceptance criteria."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.76,
+          "input": "Metrics",
+          "output": "Precise values",
+          "notes": "Matches source."
+        }
+      ]
     }
   ]
 }

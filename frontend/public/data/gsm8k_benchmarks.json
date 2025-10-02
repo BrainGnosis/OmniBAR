@@ -1,0 +1,249 @@
+{
+  "generatedAt": "2025-10-02T02:30:00+00:00",
+  "iterations": [
+    {
+      "id": "gsm_iter1",
+      "label": "Baseline Prompt",
+      "strategy": "Direct answer without chain-of-thought",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 18.2,
+      "avg_output_tokens": 120,
+      "scores": {
+        "content": 0.42,
+        "structure": 0.40,
+        "completeness": 0.38,
+        "accuracy": 0.41,
+        "overall": 0.4025
+      },
+      "metadata": {
+        "summary": "Answers without reasoning often guess the wrong number.",
+        "promptHighlights": ["No reasoning", "Single-shot", "Numeric guess"],
+        "radar": [
+          { "metric": "Reasoning Recall", "value": 0.32 },
+          { "metric": "Equation Handling", "value": 0.45 },
+          { "metric": "Unit Correctness", "value": 0.40 },
+          { "metric": "Final Answer", "value": 0.47 }
+        ]
+      },
+      "sample": "The answer is 23.",
+      "judgeNotes": [
+        "No working shown; cannot verify intermediate steps.",
+        "Guessed final number, incorrect.",
+        "Structure inconsistent with rubric."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.32,
+          "input": "Question: ...",
+          "output": "23",
+          "notes": "Answer incorrect, no reasoning."
+        },
+        {
+          "name": "Structure",
+          "score": 0.40,
+          "input": "Expected format",
+          "output": "Short sentence",
+          "notes": "Missing step-by-step."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.38,
+          "input": "Rubric",
+          "output": "No intermediate calculations",
+          "notes": "Skipped requirements."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.41,
+          "input": "Reference answer",
+          "output": "23",
+          "notes": "Wrong number."
+        }
+      ]
+    },
+    {
+      "id": "gsm_iter2",
+      "label": "Chain-of-thought",
+      "strategy": "Explicit reasoning with final answer extraction",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 22.5,
+      "avg_output_tokens": 260,
+      "scores": {
+        "content": 0.66,
+        "structure": 0.70,
+        "completeness": 0.65,
+        "accuracy": 0.68,
+        "overall": 0.6725
+      },
+      "metadata": {
+        "summary": "Adds reasoning, improves accuracy but still drifts on unit conversions.",
+        "promptHighlights": ["Chain-of-thought", "Self-check", "Answer extraction"],
+        "radar": [
+          { "metric": "Reasoning Recall", "value": 0.68 },
+          { "metric": "Equation Handling", "value": 0.72 },
+          { "metric": "Unit Correctness", "value": 0.62 },
+          { "metric": "Final Answer", "value": 0.63 }
+        ]
+      },
+      "sample": "We compute 4*6=24, so the answer is 24.",
+      "judgeNotes": [
+        "Reasoning covers each step.",
+        "Final extraction occasionally misses sign.",
+        "Structure meets rubric."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.68,
+          "input": "Question: ...",
+          "output": "Detailed reasoning",
+          "notes": "Covers major steps."
+        },
+        {
+          "name": "Structure",
+          "score": 0.70,
+          "input": "Expected format",
+          "output": "Numbered steps",
+          "notes": "Matches template."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.65,
+          "input": "Rubric",
+          "output": "Includes equations",
+          "notes": "Missing final check."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.68,
+          "input": "Reference answer",
+          "output": "24",
+          "notes": "Correct."
+        }
+      ]
+    },
+    {
+      "id": "gsm_iter3",
+      "label": "Retrieval + CoT",
+      "strategy": "Pull similar problems, reason, verify",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 29.9,
+      "avg_output_tokens": 320,
+      "scores": {
+        "content": 0.78,
+        "structure": 0.82,
+        "completeness": 0.79,
+        "accuracy": 0.80,
+        "overall": 0.7975
+      },
+      "metadata": {
+        "summary": "Retrieval examples plus reasoning; only tough edge cases fail.",
+        "promptHighlights": ["Similar examples", "Explicit verification", "Numeric guardrails"],
+        "radar": [
+          { "metric": "Reasoning Recall", "value": 0.80 },
+          { "metric": "Equation Handling", "value": 0.83 },
+          { "metric": "Unit Correctness", "value": 0.78 },
+          { "metric": "Final Answer", "value": 0.79 }
+        ]
+      },
+      "sample": "We retrieve two examples. Following the pattern, the answer is 36.",
+      "judgeNotes": [
+        "Cross-check usually works.",
+        "Occasionally copies erroneous example details.",
+        "Structure stays consistent."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.78,
+          "input": "Question: ...",
+          "output": "Detailed reasoning with retrieval",
+          "notes": "Strong."
+        },
+        {
+          "name": "Structure",
+          "score": 0.82,
+          "input": "Expected format",
+          "output": "Step-by-step + answer",
+          "notes": "Matches rubric."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.79,
+          "input": "Rubric",
+          "output": "Includes validation",
+          "notes": "Covers checklist."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.80,
+          "input": "Reference answer",
+          "output": "36",
+          "notes": "Correct answer."
+        }
+      ]
+    },
+    {
+      "id": "gsm_iter4",
+      "label": "Tool-verified",
+      "strategy": "Reason, compute with python tool, verify answer",
+      "model": "gpt-4.1-mini",
+      "run_seconds": 36.1,
+      "avg_output_tokens": 350,
+      "scores": {
+        "content": 0.88,
+        "structure": 0.90,
+        "completeness": 0.86,
+        "accuracy": 0.89,
+        "overall": 0.8825
+      },
+      "metadata": {
+        "summary": "Python tool ensures numeric accuracy; nearly production-ready.",
+        "promptHighlights": ["Tool calls", "Self-verification", "Error handling"],
+        "radar": [
+          { "metric": "Reasoning Recall", "value": 0.90 },
+          { "metric": "Equation Handling", "value": 0.92 },
+          { "metric": "Unit Correctness", "value": 0.87 },
+          { "metric": "Final Answer", "value": 0.90 }
+        ]
+      },
+      "sample": "We compute using python: result = 48.",
+      "judgeNotes": [
+        "Tool output always cross-checked.",
+        "Minor latency increase but accurate.",
+        "Ready for production."
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.88,
+          "input": "Question: ...",
+          "output": "Full reasoning",
+          "notes": "Excellent coverage."
+        },
+        {
+          "name": "Structure",
+          "score": 0.90,
+          "input": "Expected format",
+          "output": "Steps + python log",
+          "notes": "Template perfect."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.86,
+          "input": "Rubric",
+          "output": "Includes verification",
+          "notes": "Meets criteria."
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.89,
+          "input": "Reference answer",
+          "output": "48",
+          "notes": "Matches ground truth."
+        }
+      ]
+    }
+  ]
+}

@@ -121,7 +121,6 @@ class OmniBarmarker(BaseModel):
         BoolEvalResult: BooleanEvaluator,
         FloatEvalResult: FloatEvaluator
     })  # Mapping of result types to evaluator classes
-    
     # Private Attributes
     _tqdm: Any = PrivateAttr(default=None)
     _logger: BenchmarkLogger = PrivateAttr(default_factory=BenchmarkLogger)
@@ -260,10 +259,11 @@ class OmniBarmarker(BaseModel):
             
         log_key = self._create_log_key(benchmark.uuid, objective_id)
         if log_key in self._active_logs:
+            payload = agent_output if isinstance(agent_output, dict) else {'output': agent_output}
             log_entry = LogEntry(
                 objective_id=objective_id,
                 eval_result=eval_result,
-                evaluated_output=agent_output,
+                evaluated_output=payload,
                 timestamp=datetime.now(),
                 metadata={}
             )
@@ -451,7 +451,6 @@ class OmniBarmarker(BaseModel):
         invoke_method = getattr(agent, method_name)
         if not callable(invoke_method):
             raise AttributeError(f"Agent method '{method_name}' is not callable")
-        
 
         return invoke_method(**benchmark.input_kwargs)
 

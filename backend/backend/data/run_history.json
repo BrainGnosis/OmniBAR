@@ -1,0 +1,152 @@
+[
+  {
+    "id": "83e7470c-84a1-4e37-baf6-a71d55572fa8",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T06:01:44.404347+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 1.790553451020969,
+      "output": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}"
+    },
+    "benchmarkCount": 1,
+    "failed": 1,
+    "success": 0,
+    "status": "needs_attention",
+    "threshold": null
+  },
+  {
+    "id": "3d4f4a34-88b4-4d9f-b169-ddee538523fa",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:01:30.782852+00:00",
+    "generatedAt": "2025-10-02T06:01:30.781812+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "f1492bbb-7611-469a-b2a4-2452c5214066",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:01:28.415795+00:00",
+    "generatedAt": "2025-10-02T06:01:28.410570+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "e83f00f3-5f43-46ed-af26-7d827fb4903d",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T06:00:05.680440+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 2.5566714580054395,
+      "output": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}"
+    },
+    "benchmarkCount": 1,
+    "failed": 1,
+    "success": 0,
+    "status": "needs_attention",
+    "threshold": null
+  },
+  {
+    "id": "6b0b3d5e-c264-4cf9-9fdf-a2a4647aae02",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:59:55.204790+00:00",
+    "generatedAt": "2025-10-02T05:59:55.198955+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "bfdadfa0-9e11-49ba-a73b-e7834ebd0ff6",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:59:55.182914+00:00",
+    "generatedAt": "2025-10-02T05:59:54.562226+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "cb9f6ef9-507a-49e5-b902-9d860c05425f",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T05:50:11.721502+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 1.59704812898417,
+      "output": "Error code: 429 - {'error': {'message': 'You exceeded your current quota, please check your plan and billing details. For more information on this error, read the docs: https://platform.openai.com/docs/guides/error-codes/api-errors.', 'type': 'insufficient_quota', 'param': None, 'code': 'insufficient_quota'}}"
+    },
+    "benchmarkCount": 1,
+    "failed": 1,
+    "success": 0,
+    "status": "needs_attention",
+    "threshold": null
+  },
+  {
+    "id": "331937e4-f989-4e1f-aa59-6a45961566d9",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:50:03.483428+00:00",
+    "generatedAt": "2025-10-02T05:50:03.482519+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "1d041e8c-05c5-4452-8981-c42a33a59628",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T05:49:59.822414+00:00",
+    "generatedAt": "2025-10-02T05:49:59.820699+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  }
+]
