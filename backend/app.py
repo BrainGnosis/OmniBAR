@@ -29,6 +29,8 @@ RUN_HISTORY_PATH = Path("backend/data/run_history.json")
 RUN_HISTORY_LIMIT = 100
 SUITE_LABELS = {
     "output": "Output",
+    "coding": "Coding Challenges",
+    "math": "Math Reasoning",
     "custom": "Custom",
     "crisis": "Crisis",
     "all": "All",
@@ -36,7 +38,7 @@ SUITE_LABELS = {
 LLM_HEALTH_MODEL = os.getenv('OMNIBAR_LLM_HEALTH_MODEL', 'gpt-4o-mini')
 
 
-def _openai_client() -> OpenAI:
+def _openai_client() -> Any:
     if OpenAI is None:
         raise RuntimeError('openai package not installed. Install openai to enable LLM health checks.')
     api_key = os.getenv('OPENAI_API_KEY')

@@ -1,5 +1,412 @@
 [
   {
+    "id": "f8b79b39-eba9-4c3f-a0b2-f775086d9dbe",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:21:33.068545+00:00",
+    "generatedAt": "2025-10-02T07:21:33.065105+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "869fbd6a-0ddd-4465-a67f-f06871cf8a35",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:21:33.049127+00:00",
+    "generatedAt": "2025-10-02T07:21:32.853345+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "160142d0-acbc-42a0-b0c6-6c532d3f3df5",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:20:24.128283+00:00",
+    "generatedAt": "2025-10-02T07:20:24.121027+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "e63e3834-e7fa-470a-b01e-b79bca8f32a4",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:20:24.122589+00:00",
+    "generatedAt": "2025-10-02T07:20:24.115374+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "c372559e-61e7-4fc2-8603-e91cf35e244f",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:15:15.946774+00:00",
+    "generatedAt": "2025-10-02T07:15:15.944446+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "8cc550df-df82-4d49-88f5-2f9a9ce91a61",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:15:15.931519+00:00",
+    "generatedAt": "2025-10-02T07:15:15.858363+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "b20cc9c1-7336-44c8-9ce0-9328c3026de0",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:08:56.257161+00:00",
+    "generatedAt": "2025-10-02T07:08:56.255827+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "dca28d7a-8ad7-4a4f-8889-95f89b1061c9",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:08:48.947452+00:00",
+    "generatedAt": "2025-10-02T07:08:48.945425+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "2f59aaed-fd70-44fc-bf41-91f3131030b7",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T07:08:48.944150+00:00",
+    "generatedAt": "2025-10-02T07:08:48.941531+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "e317009a-c4f2-4e08-bf25-cfb0b1b41055",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:58:57.890962+00:00",
+    "generatedAt": "2025-10-02T06:58:57.886276+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "06596410-b055-4b3c-b610-05bbc6b7f3b7",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:58:57.880628+00:00",
+    "generatedAt": "2025-10-02T06:58:57.810452+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "210c22a1-e736-44a4-9b1e-6a0fdbe55ece",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:56:56.182019+00:00",
+    "generatedAt": "2025-10-02T06:56:56.179621+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "2889e65f-d879-4306-b762-3fa1204692f3",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:56:56.074645+00:00",
+    "generatedAt": "2025-10-02T06:56:56.072623+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "b77deded-10ed-432c-81d6-7b4d000c329c",
+    "suite": "all",
+    "suiteLabel": "All",
+    "requestedAt": "2025-10-02T06:56:36.043797+00:00",
+    "generatedAt": "2025-10-02T06:56:36.042139+00:00",
+    "summary": {
+      "total": 14,
+      "success": 13,
+      "failed": 1,
+      "costUsd": 0.001887
+    },
+    "benchmarkCount": 14,
+    "failed": 1,
+    "success": 13,
+    "status": "needs_attention",
+    "threshold": 0.75
+  },
+  {
+    "id": "88870f68-be91-460c-bad9-bfc888886469",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:56:34.097124+00:00",
+    "generatedAt": "2025-10-02T06:56:34.096203+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "e43ff73b-95d0-4f73-b373-cb2af3c96d0e",
+    "suite": "custom",
+    "suiteLabel": "Custom",
+    "requestedAt": "2025-10-02T06:56:31.682595+00:00",
+    "generatedAt": "2025-10-02T06:56:31.681690+00:00",
+    "summary": {
+      "total": 3,
+      "success": 3,
+      "failed": 0,
+      "costUsd": 0.00033
+    },
+    "benchmarkCount": 3,
+    "failed": 0,
+    "success": 3,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "ce92f77b-622a-4f79-9a95-e40cc80e784e",
+    "suite": "crisis",
+    "suiteLabel": "Crisis",
+    "requestedAt": "2025-10-02T06:56:26.203934+00:00",
+    "generatedAt": "2025-10-02T06:56:26.202786+00:00",
+    "summary": {
+      "total": 1,
+      "success": 0,
+      "failed": 1,
+      "costUsd": 0.000546
+    },
+    "benchmarkCount": 1,
+    "failed": 1,
+    "success": 0,
+    "status": "needs_attention",
+    "threshold": 0.75
+  },
+  {
+    "id": "55566ce5-0e49-4ae7-864b-45ec6620a166",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:56:18.611420+00:00",
+    "generatedAt": "2025-10-02T06:56:18.573837+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0,
+      "costUsd": 0.000249
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "1c43646b-a820-415e-862c-9d3b45fdca83",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T06:51:49.242873+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 0.4529243109864183,
+      "output": "4"
+    },
+    "benchmarkCount": 1,
+    "failed": 0,
+    "success": 1,
+    "status": "success",
+    "threshold": null
+  },
+  {
+    "id": "f974251d-7505-493b-9338-a898bebd90e6",
+    "suite": "smoke",
+    "suiteLabel": "LLM Smoke Test",
+    "requestedAt": "2025-10-02T06:24:21.290968+00:00",
+    "generatedAt": null,
+    "summary": {
+      "latency": 0.6031928320007864,
+      "output": "4"
+    },
+    "benchmarkCount": 1,
+    "failed": 0,
+    "success": 1,
+    "status": "success",
+    "threshold": null
+  },
+  {
+    "id": "d6ff5440-c5ad-40a6-8f05-7aff6228c56b",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:24:13.713607+00:00",
+    "generatedAt": "2025-10-02T06:24:13.711873+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "87aa12ec-4f24-44f3-8c9a-cf626245cd6f",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:24:10.976804+00:00",
+    "generatedAt": "2025-10-02T06:24:10.970430+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
+    "id": "7ea01044-af2c-4385-98be-483ea7c91736",
+    "suite": "output",
+    "suiteLabel": "Output",
+    "requestedAt": "2025-10-02T06:24:10.972721+00:00",
+    "generatedAt": "2025-10-02T06:24:10.953159+00:00",
+    "summary": {
+      "total": 4,
+      "success": 4,
+      "failed": 0
+    },
+    "benchmarkCount": 4,
+    "failed": 0,
+    "success": 4,
+    "status": "success",
+    "threshold": 0.75
+  },
+  {
     "id": "83e7470c-84a1-4e37-baf6-a71d55572fa8",
     "suite": "smoke",
     "suiteLabel": "LLM Smoke Test",

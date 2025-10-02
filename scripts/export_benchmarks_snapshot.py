@@ -3,14 +3,178 @@
 from __future__ import annotations
 
 import json
+import logging
+import os
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any, List, Tuple
+from uuid import uuid4
 
 from omnibar import Benchmark
 from omnibar.core.benchmarker import OmniBarmarker
 from omnibar.core.types import BoolEvalResult
 from omnibar.objectives import CombinedBenchmarkObjective, RegexMatchObjective, StringEqualityObjective
+
+try:
+    from openai import OpenAI
+except ImportError:  # pragma: no cover - optional dependency
+    OpenAI = None
+
+
+LOGGER = logging.getLogger(__name__)
+
+
+def _strtobool(value: str | None) -> bool:
+    if value is None:
+        return False
+    return value.strip().lower() in {"1", "true", "yes", "on"}
+
+
+LLM_BENCHMARKS_ENABLED = _strtobool(os.getenv("OMNIBAR_ENABLE_OPENAI_BENCHMARKS"))
+DEFAULT_LLM_MODEL = os.getenv("OMNIBAR_OPENAI_BENCHMARK_MODEL", "gpt-4o-mini")
+DEFAULT_LLM_TEMPERATURE = float(os.getenv("OMNIBAR_OPENAI_BENCHMARK_TEMPERATURE", "0"))
+DEFAULT_LLM_MAX_TOKENS = int(os.getenv("OMNIBAR_OPENAI_BENCHMARK_MAX_TOKENS", "512"))
+OPENAI_COST_PER_1K_TOKENS = float(os.getenv("OMNIBAR_OPENAI_COST_PER_1K", "0.003"))
+LLM_BUDGET_USD = float(os.getenv("OMNIBAR_OPENAI_BUDGET_USD", "0"))
+
+SPEND_TRACKER_PATH = Path("backend/data/openai_spend.json")
+SPEND_EVENT_LIMIT = 200
+
+_OPENAI_SUITE_CLIENT: Any | None = None
+
+
+def _get_openai_suite_client() -> Any | None:
+    """Return a cached OpenAI client when LLM benchmarks are enabled and configured."""
+
+    global _OPENAI_SUITE_CLIENT
+
+    if not LLM_BENCHMARKS_ENABLED:
+        return None
+
+    if OpenAI is None:
+        LOGGER.warning("OpenAI SDK not installed; disabling LLM-backed benchmarks.")
+        return None
+
+    if _OPENAI_SUITE_CLIENT is not None:
+        return _OPENAI_SUITE_CLIENT
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        LOGGER.warning("OPENAI_API_KEY missing; disabling LLM-backed benchmarks.")
+        return None
+
+    project = os.getenv("OPENAI_PROJECT")
+
+    try:
+        _OPENAI_SUITE_CLIENT = OpenAI(api_key=api_key, project=project) if project else OpenAI(api_key=api_key)
+    except Exception as error:  # pragma: no cover - defensive
+        LOGGER.warning("Failed to initialize OpenAI client for benchmarks: %s", error)
+        _OPENAI_SUITE_CLIENT = None
+
+    return _OPENAI_SUITE_CLIENT
+
+
+def _load_spend_tracker() -> dict[str, Any]:
+    if not SPEND_TRACKER_PATH.exists():
+        return {
+            "total_spend_usd": 0.0,
+            "events": [],
+            "budget_usd": LLM_BUDGET_USD,
+            "remaining_budget_usd": LLM_BUDGET_USD if LLM_BUDGET_USD > 0 else None,
+        }
+
+    try:
+        with SPEND_TRACKER_PATH.open("r", encoding="utf-8") as handle:
+            data = json.load(handle)
+    except Exception as error:  # pragma: no cover - defensive
+        LOGGER.warning("Failed to read spend tracker: %s", error)
+        return {
+            "total_spend_usd": 0.0,
+            "events": [],
+            "budget_usd": LLM_BUDGET_USD,
+            "remaining_budget_usd": LLM_BUDGET_USD if LLM_BUDGET_USD > 0 else None,
+        }
+
+    data.setdefault("events", [])
+    data.setdefault("total_spend_usd", 0.0)
+    data["budget_usd"] = LLM_BUDGET_USD
+    if LLM_BUDGET_USD > 0:
+        data["remaining_budget_usd"] = max(LLM_BUDGET_USD - float(data["total_spend_usd"]), 0.0)
+    else:
+        data["remaining_budget_usd"] = None
+    return data
+
+
+def _store_spend_tracker(tracker: dict[str, Any]) -> None:
+    tracker["budget_usd"] = LLM_BUDGET_USD
+    if LLM_BUDGET_USD > 0:
+        tracker["remaining_budget_usd"] = max(LLM_BUDGET_USD - float(tracker.get("total_spend_usd", 0.0)), 0.0)
+    else:
+        tracker["remaining_budget_usd"] = None
+
+    try:
+        SPEND_TRACKER_PATH.parent.mkdir(parents=True, exist_ok=True)
+        with SPEND_TRACKER_PATH.open("w", encoding="utf-8") as handle:
+            json.dump(tracker, handle, indent=2)
+    except Exception as error:  # pragma: no cover - defensive
+        LOGGER.warning("Failed to persist spend tracker: %s", error)
+
+
+def _record_usage_cost(
+    *,
+    source: str,
+    detail: str,
+    total_tokens: int | None,
+    cost_override_usd: float | None = None,
+) -> dict[str, Any] | None:
+    if cost_override_usd is not None:
+        cost_usd = float(cost_override_usd)
+    elif total_tokens is not None:
+        cost_usd = float(total_tokens) / 1000.0 * OPENAI_COST_PER_1K_TOKENS
+    else:
+        return None
+
+    tracker = _load_spend_tracker()
+    tracker["total_spend_usd"] = float(tracker.get("total_spend_usd", 0.0)) + cost_usd
+
+    events = tracker.setdefault("events", [])
+    events.insert(
+        0,
+        {
+            "timestamp": datetime.now(UTC).isoformat(),
+            "source": source,
+            "detail": detail,
+            "tokens": total_tokens,
+            "cost_usd": round(cost_usd, 6),
+        },
+    )
+    if len(events) > SPEND_EVENT_LIMIT:
+        del events[SPEND_EVENT_LIMIT:]
+
+    _store_spend_tracker(tracker)
+
+    total_spend = tracker.get("total_spend_usd", 0.0)
+    remaining = tracker.get("remaining_budget_usd")
+
+    if LLM_BUDGET_USD > 0:
+        if total_spend >= LLM_BUDGET_USD:
+            LOGGER.warning(
+                "OpenAI spend %.2f USD reached configured budget %.2f USD.",
+                total_spend,
+                LLM_BUDGET_USD,
+            )
+        elif total_spend >= 0.8 * LLM_BUDGET_USD:
+            LOGGER.warning(
+                "OpenAI spend %.2f USD is at 80%% of configured budget %.2f USD.",
+                total_spend,
+                LLM_BUDGET_USD,
+            )
+
+    return {
+        "cost_usd": round(cost_usd, 6),
+        "total_spend_usd": round(total_spend, 6),
+        "remaining_budget_usd": None if remaining is None else round(remaining, 6),
+    }
 
 SuiteRun = Tuple[str, OmniBarmarker]
 
@@ -117,8 +281,343 @@ class SimpleTranslatorAgent:
 
 
 # ---------------------------------------------------------------------------
+# Additional demo agents for expanded datasets
+# ---------------------------------------------------------------------------
+
+
+class MathReasoningAgent:
+    """Synthetic math reasoning agent with canned solutions for benchmark demos."""
+
+    def __init__(self) -> None:
+        self.solutions = {
+            "quadratic_roots": {
+                "answer": "x = 2 or x = -2",
+                "status": "success",
+                "explanation": "Solve x^2 - 4 = 0 by factoring into (x - 2)(x + 2) = 0, so x = ±2.",
+            },
+            "combinatorics_arrangements": {
+                "answer": "30",
+                "status": "success",
+                "explanation": "LEVEL has 5 letters with L repeated twice and E twice: 5! / (2! * 2!) = 30 unique orderings.",
+            },
+            "limit_sine": {
+                "answer": "1",
+                "status": "success",
+                "explanation": "Using the standard limit lim_{x->0} sin(x)/x = 1.",
+            },
+        }
+
+    def solve(self, problem: str) -> dict[str, Any]:
+        return self.solutions.get(
+            problem,
+            {
+                "problem": problem,
+                "answer": None,
+                "status": "unknown",
+                "explanation": "Problem not available in demo dataset.",
+            },
+        )
+
+
+class CodingChallengeAgent:
+    """Synthetic coding agent that returns representative code snippets for demos."""
+
+    def __init__(self) -> None:
+        self.templates = {
+            "fibonacci_sequence": {
+                "code": (
+                    "def fibonacci(n: int) -> list[int]:\n"
+                    "    sequence = [0, 1]\n"
+                    "    for _ in range(2, n):\n"
+                    "        sequence.append(sequence[-1] + sequence[-2])\n"
+                    "    return sequence[:n]\n"
+                ),
+                "language": "python",
+                "status": "ready",
+            },
+            "anagram_checker": {
+                "code": (
+                    "def are_anagrams(word_a: str, word_b: str) -> bool:\n"
+                    "    normalized_a = ''.join(sorted(word_a.lower()))\n"
+                    "    normalized_b = ''.join(sorted(word_b.lower()))\n"
+                    "    return normalized_a == normalized_b\n"
+                ),
+                "language": "python",
+                "status": "ready",
+            },
+            "matrix_trace": {
+                "code": (
+                    "def matrix_trace(matrix: list[list[int]]) -> int:\n"
+                    "    return sum(row[i] for i, row in enumerate(matrix))\n"
+                ),
+                "language": "python",
+                "status": "ready",
+            },
+        }
+
+    def generate(self, task: str) -> dict[str, Any]:
+        return self.templates.get(
+            task,
+            {
+                "task": task,
+                "code": "",
+                "language": "python",
+                "status": "unknown",
+            },
+        )
+
+
+# ---------------------------------------------------------------------------
 # Suite runners
 # ---------------------------------------------------------------------------
+
+
+MATH_PROBLEM_PROMPTS: dict[str, str] = {
+    "quadratic_roots": (
+        "Solve the equation x^2 - 4 = 0. Provide both real roots and"
+        " explain the factoring method you used."
+    ),
+    "combinatorics_arrangements": (
+        "How many distinct arrangements of the letters in the word LEVEL"
+        " are there? Show the factorial expression you relied on."
+    ),
+    "limit_sine": (
+        "Evaluate the limit as x approaches 0 of sin(x) / x and explain"
+        " the reasoning."
+    ),
+}
+
+
+CODING_TASK_PROMPTS: dict[str, str] = {
+    "fibonacci_sequence": (
+        "Write a Python function named fibonacci that takes an integer n"
+        " and returns a list containing the first n Fibonacci numbers."
+    ),
+    "anagram_checker": (
+        "Write a Python function are_anagrams(word_a, word_b) that"
+        " returns True when the inputs are anagrams (case-insensitive) and"
+        " False otherwise. Normalize the inputs before comparison."
+    ),
+    "matrix_trace": (
+        "Write a Python function matrix_trace(matrix) that computes the"
+        " trace of a square matrix represented as a list of lists."
+    ),
+}
+
+
+class OpenAIMathReasoningAgent:
+    """Send math problems to OpenAI and coerce JSON aligned with benchmark objectives."""
+
+    def __init__(
+        self,
+        client: OpenAI,
+        *,
+        model: str = DEFAULT_LLM_MODEL,
+        temperature: float = DEFAULT_LLM_TEMPERATURE,
+        max_tokens: int = DEFAULT_LLM_MAX_TOKENS,
+    ) -> None:
+        self._client = client
+        self._model = model
+        self._temperature = temperature
+        self._max_tokens = max_tokens
+
+    def solve(self, problem: str) -> dict[str, Any]:
+        prompt = MATH_PROBLEM_PROMPTS.get(problem)
+        if prompt is None:
+            return {
+                "problem": problem,
+                "answer": None,
+                "status": "unknown",
+                "explanation": "Problem not configured for OpenAI math benchmarks.",
+            }
+
+        try:
+            response = self._client.chat.completions.create(
+                model=self._model,
+                temperature=self._temperature,
+                max_tokens=self._max_tokens,
+                response_format={"type": "json_object"},
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are an expert math assistant. Respond strictly with a JSON object"
+                            " containing keys 'answer', 'explanation', and 'status'. When the"
+                            " solution is correct, set status to 'success'. If you cannot solve the"
+                            " problem, set status to 'error' and provide a brief explanation."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+            )
+        except Exception as error:  # pragma: no cover - network failure path
+            return {
+                "problem": problem,
+                "answer": None,
+                "status": "error",
+                "explanation": f"OpenAI request failed: {error}",
+            }
+
+        content = response.choices[0].message.content if response.choices else ""
+
+        try:
+            payload = json.loads(content)
+        except Exception as error:
+            return {
+                "problem": problem,
+                "answer": None,
+                "status": "error",
+                "explanation": f"Invalid JSON from OpenAI: {error}",
+                "raw_output": content,
+            }
+
+        answer = payload.get("answer")
+        explanation = payload.get("explanation")
+        status = payload.get("status", "error")
+
+        call_id = str(uuid4())
+        result: dict[str, Any] = {
+            "call_id": call_id,
+            "problem": problem,
+            "answer": answer,
+            "status": status,
+            "explanation": explanation,
+            "raw_output": content,
+        }
+
+        usage = getattr(response, "usage", None)
+        total_tokens = None
+        if usage is not None:
+            total_tokens = getattr(usage, "total_tokens", None)
+            result["usage"] = {
+                "prompt_tokens": getattr(usage, "prompt_tokens", None),
+                "completion_tokens": getattr(usage, "completion_tokens", None),
+                "total_tokens": total_tokens,
+            }
+
+        spend_snapshot = _record_usage_cost(
+            source="math_reasoning",
+            detail=problem,
+            total_tokens=total_tokens,
+            cost_override_usd=payload.get("cost_usd"),
+        )
+
+        if spend_snapshot is not None:
+            result["cost_usd"] = spend_snapshot.get("cost_usd")
+            result["total_spend_usd"] = spend_snapshot.get("total_spend_usd")
+            result["remaining_budget_usd"] = spend_snapshot.get("remaining_budget_usd")
+
+        return result
+
+
+class OpenAICodingChallengeAgent:
+    """Generate coding solutions via OpenAI while enforcing the benchmark schema."""
+
+    def __init__(
+        self,
+        client: OpenAI,
+        *,
+        model: str = DEFAULT_LLM_MODEL,
+        temperature: float = DEFAULT_LLM_TEMPERATURE,
+        max_tokens: int = DEFAULT_LLM_MAX_TOKENS,
+    ) -> None:
+        self._client = client
+        self._model = model
+        self._temperature = temperature
+        self._max_tokens = max_tokens
+
+    def generate(self, task: str) -> dict[str, Any]:
+        prompt = CODING_TASK_PROMPTS.get(task)
+        if prompt is None:
+            return {
+                "task": task,
+                "code": "",
+                "language": "python",
+                "status": "unknown",
+                "explanation": "Task not configured for OpenAI coding benchmarks.",
+            }
+
+        try:
+            response = self._client.chat.completions.create(
+                model=self._model,
+                temperature=self._temperature,
+                max_tokens=self._max_tokens,
+                response_format={"type": "json_object"},
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a senior Python developer. Respond with a JSON object containing"
+                            " keys 'code', 'language', 'status', and optionally 'explanation'."
+                            " Emit valid Python code in the 'code' field. For successful solutions"
+                            " set status to 'ready' and language to 'python'."
+                        ),
+                    },
+                    {"role": "user", "content": prompt},
+                ],
+            )
+        except Exception as error:  # pragma: no cover - network failure path
+            return {
+                "task": task,
+                "code": "",
+                "language": "python",
+                "status": "error",
+                "explanation": f"OpenAI request failed: {error}",
+            }
+
+        content = response.choices[0].message.content if response.choices else ""
+
+        try:
+            payload = json.loads(content)
+        except Exception as error:
+            return {
+                "task": task,
+                "code": "",
+                "language": "python",
+                "status": "error",
+                "explanation": f"Invalid JSON from OpenAI: {error}",
+                "raw_output": content,
+            }
+
+        code = payload.get("code", "")
+        language = payload.get("language", "python")
+        status = payload.get("status", "error")
+        explanation = payload.get("explanation")
+
+        call_id = str(uuid4())
+        result: dict[str, Any] = {
+            "call_id": call_id,
+            "task": task,
+            "code": code,
+            "language": language,
+            "status": status,
+            "explanation": explanation,
+            "raw_output": content,
+        }
+
+        usage = getattr(response, "usage", None)
+        total_tokens = None
+        if usage is not None:
+            total_tokens = getattr(usage, "total_tokens", None)
+            result["usage"] = {
+                "prompt_tokens": getattr(usage, "prompt_tokens", None),
+                "completion_tokens": getattr(usage, "completion_tokens", None),
+                "total_tokens": total_tokens,
+            }
+
+        spend_snapshot = _record_usage_cost(
+            source="coding_challenges",
+            detail=task,
+            total_tokens=total_tokens,
+            cost_override_usd=payload.get("cost_usd"),
+        )
+
+        if spend_snapshot is not None:
+            result["cost_usd"] = spend_snapshot.get("cost_usd")
+            result["total_spend_usd"] = spend_snapshot.get("total_spend_usd")
+            result["remaining_budget_usd"] = spend_snapshot.get("remaining_budget_usd")
+
+        return result
 
 
 def run_output_evaluation_suite() -> SuiteRun:
@@ -292,6 +791,229 @@ def run_custom_agents_suite() -> List[SuiteRun]:
     ]
 
 
+def run_math_reasoning_suite() -> SuiteRun:
+    client = _get_openai_suite_client()
+    if client is not None:
+        agent = OpenAIMathReasoningAgent(
+            client,
+            model=DEFAULT_LLM_MODEL,
+            temperature=DEFAULT_LLM_TEMPERATURE,
+            max_tokens=DEFAULT_LLM_MAX_TOKENS,
+        )
+    else:
+        agent = MathReasoningAgent()
+    math_benchmarks = [
+        Benchmark(
+            name="Quadratic Roots Reasoning",
+            input_kwargs={"problem": "quadratic_roots"},
+            objective=CombinedBenchmarkObjective(
+                name="math_quadratic_root_checks",
+                objectives=[
+                    RegexMatchObjective(
+                        name="mentions_factoring",
+                        output_key="explanation",
+                        goal=r"factor",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    RegexMatchObjective(
+                        name="reports_both_roots",
+                        output_key="answer",
+                        goal=r"x\s*=\s*2.*-2",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="math_status_success",
+                        output_key="status",
+                        goal="success",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="solve",
+        ),
+        Benchmark(
+            name="Word Arrangement Count",
+            input_kwargs={"problem": "combinatorics_arrangements"},
+            objective=CombinedBenchmarkObjective(
+                name="math_combinatorics_checks",
+                objectives=[
+                    StringEqualityObjective(
+                        name="correct_permutation_count",
+                        output_key="answer",
+                        goal="30",
+                    ),
+                    RegexMatchObjective(
+                        name="mentions_factorial_reasoning",
+                        output_key="explanation",
+                        goal=r"5!",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="math_status_factorial",
+                        output_key="status",
+                        goal="success",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="solve",
+        ),
+        Benchmark(
+            name="Sine Limit Evaluation",
+            input_kwargs={"problem": "limit_sine"},
+            objective=CombinedBenchmarkObjective(
+                name="math_limit_checks",
+                objectives=[
+                    StringEqualityObjective(
+                        name="correct_limit_value",
+                        output_key="answer",
+                        goal="1",
+                    ),
+                    RegexMatchObjective(
+                        name="mentions_classic_sine_limit",
+                        output_key="explanation",
+                        goal=r"sin\(x\)/x",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="math_status_limit",
+                        output_key="status",
+                        goal="success",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="solve",
+        ),
+    ]
+
+    marker = OmniBarmarker(
+        executor_fn=lambda: agent,
+        executor_kwargs={},
+        agent_invoke_method_name="solve",
+        initial_input=math_benchmarks,
+        enable_logging=True,
+        auto_assign_evaluators=True,
+    )
+    marker.benchmark()
+    return "math_reasoning", marker
+
+
+def run_coding_challenges_suite() -> SuiteRun:
+    client = _get_openai_suite_client()
+    if client is not None:
+        agent = OpenAICodingChallengeAgent(
+            client,
+            model=DEFAULT_LLM_MODEL,
+            temperature=DEFAULT_LLM_TEMPERATURE,
+            max_tokens=DEFAULT_LLM_MAX_TOKENS,
+        )
+    else:
+        agent = CodingChallengeAgent()
+    coding_benchmarks = [
+        Benchmark(
+            name="Fibonacci Sequence Implementation",
+            input_kwargs={"task": "fibonacci_sequence"},
+            objective=CombinedBenchmarkObjective(
+                name="coding_fibonacci_checks",
+                objectives=[
+                    RegexMatchObjective(
+                        name="defines_fibonacci_function",
+                        output_key="code",
+                        goal=r"def\s+fibonacci",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    RegexMatchObjective(
+                        name="appends_new_terms",
+                        output_key="code",
+                        goal=r"sequence\.append",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="coding_language_python",
+                        output_key="language",
+                        goal="python",
+                    ),
+                    StringEqualityObjective(
+                        name="coding_status_ready",
+                        output_key="status",
+                        goal="ready",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="generate",
+        ),
+        Benchmark(
+            name="Anagram Checker Implementation",
+            input_kwargs={"task": "anagram_checker"},
+            objective=CombinedBenchmarkObjective(
+                name="coding_anagram_checks",
+                objectives=[
+                    RegexMatchObjective(
+                        name="normalizes_input",
+                        output_key="code",
+                        goal=r"sorted\(word_a\.lower\(\)\)",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    RegexMatchObjective(
+                        name="compares_normalized_strings",
+                        output_key="code",
+                        goal=r"normalized_a\s*==\s*normalized_b",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="coding_status_anagram",
+                        output_key="status",
+                        goal="ready",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="generate",
+        ),
+        Benchmark(
+            name="Matrix Trace Helper",
+            input_kwargs={"task": "matrix_trace"},
+            objective=CombinedBenchmarkObjective(
+                name="coding_matrix_trace_checks",
+                objectives=[
+                    RegexMatchObjective(
+                        name="uses_enumerate",
+                        output_key="code",
+                        goal=r"enumerate\(matrix\)",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    RegexMatchObjective(
+                        name="sums_diagonal",
+                        output_key="code",
+                        goal=r"row\[i\]",
+                        valid_eval_result_type=BoolEvalResult,
+                    ),
+                    StringEqualityObjective(
+                        name="coding_status_matrix",
+                        output_key="status",
+                        goal="ready",
+                    ),
+                ],
+            ),
+            iterations=1,
+            invoke_method="generate",
+        ),
+    ]
+
+    marker = OmniBarmarker(
+        executor_fn=lambda: agent,
+        executor_kwargs={},
+        agent_invoke_method_name="generate",
+        initial_input=coding_benchmarks,
+        enable_logging=True,
+        auto_assign_evaluators=True,
+    )
+    marker.benchmark()
+    return "coding_challenges", marker
+
+
 class InventoryCrisisAgent:
     """Simulated crisis-management agent returning structured output without external APIs."""
 
@@ -377,6 +1099,8 @@ def compute_results(suites: List[SuiteRun]) -> dict[str, dict[str, Any]]:
                 "suite": suite_name,
                 "latencies": [],
                 "token_counts": [],
+                "costs": [],
+                "usage_call_ids": set(),
                 "confidences": [],
                 "history": [],
                 "error_flags": set(),
@@ -418,13 +1142,47 @@ def compute_results(suites: List[SuiteRun]) -> dict[str, dict[str, Any]]:
                 message = getattr(entry.eval_result, "message", None)
 
                 evaluated_output = entry.evaluated_output or {}
+                token_added = False
+                cost_added = False
+
+                call_id = evaluated_output.get("call_id") if isinstance(evaluated_output, dict) else None
+                usage = evaluated_output.get("usage") if isinstance(evaluated_output, dict) else None
+                cost_usd = evaluated_output.get("cost_usd") if isinstance(evaluated_output, dict) else None
+
+                if call_id and call_id not in stats["usage_call_ids"]:
+                    stats["usage_call_ids"].add(call_id)
+
+                    total_tokens = None
+                    if isinstance(usage, dict):
+                        total_tokens = usage.get("total_tokens")
+                        if total_tokens is None:
+                            prompt_tokens = usage.get("prompt_tokens")
+                            completion_tokens = usage.get("completion_tokens")
+                            if isinstance(prompt_tokens, (int, float)) and isinstance(completion_tokens, (int, float)):
+                                total_tokens = float(prompt_tokens) + float(completion_tokens)
+
+                    if total_tokens is not None:
+                        stats["token_counts"].append(float(total_tokens))
+                        token_added = True
+
+                    if cost_usd is not None:
+                        stats["costs"].append(float(cost_usd))
+                        cost_added = True
+                    elif token_added and stats["token_counts"]:
+                        stats["costs"].append(float(stats["token_counts"][-1]) / 1000.0 * OPENAI_COST_PER_1K_TOKENS)
+                        cost_added = True
+
                 if evaluated_output:
-                    # Rough token estimate based on json length
-                    try:
-                        encoded = json.dumps(evaluated_output)
-                    except TypeError:
-                        encoded = str(evaluated_output)
-                    stats["token_counts"].append(max(len(encoded) // 4, 1))
+                    # Rough token estimate based on json length when usage not available
+                    if not token_added:
+                        try:
+                            encoded = json.dumps(evaluated_output)
+                        except TypeError:
+                            encoded = str(evaluated_output)
+                        stats["token_counts"].append(max(len(encoded) // 4, 1))
+                        token_added = True
+                    if not cost_added and token_added and stats["token_counts"]:
+                        stats["costs"].append(float(stats["token_counts"][-1]) / 1000.0 * OPENAI_COST_PER_1K_TOKENS)
                     confidence = evaluated_output.get("confidence")
                     if isinstance(confidence, (int, float)):
                         stats["confidences"].append(float(confidence))
@@ -477,7 +1235,7 @@ def build_api_payload(suites: List[SuiteRun]) -> dict[str, Any]:
     results = compute_results(suites)
 
     benchmarks_payload = []
-    summary = {"total": 0, "success": 0, "failed": 0}
+    summary = {"total": 0, "success": 0, "failed": 0, "costUsd": 0.0}
 
     for benchmark_id, data in results.items():
         total = data["iterations"]
@@ -490,9 +1248,15 @@ def build_api_payload(suites: List[SuiteRun]) -> dict[str, Any]:
         summary["success"] += 1 if status == "success" else 0
         summary["failed"] += 1 if status == "failed" else 0
 
-        avg_latency = sum(data.get("latencies", [])) / len(data.get("latencies", [])) if data.get("latencies") else 0.0
-        avg_tokens = sum(data.get("token_counts", [])) / len(data.get("token_counts", [])) if data.get("token_counts") else 0.0
-        cost_usd = round((avg_tokens / 1000) * 0.003, 6)
+        latencies = data.get("latencies", [])
+        token_counts = data.get("token_counts", [])
+        cost_samples = data.get("costs", [])
+
+        avg_latency = sum(latencies) / len(latencies) if latencies else 0.0
+        avg_tokens = float(sum(token_counts) / len(token_counts)) if token_counts else 0.0
+        avg_cost = sum(cost_samples) / len(cost_samples) if cost_samples else (avg_tokens / 1000.0) * OPENAI_COST_PER_1K_TOKENS
+        cost_usd = round(avg_cost, 6)
+        summary["costUsd"] += cost_usd
         avg_confidence = sum(data.get("confidences", [])) / len(data.get("confidences", [])) if data.get("confidences") else None
         error_flags_raw = data.get("error_flags") or []
         if isinstance(error_flags_raw, set):
@@ -564,6 +1328,18 @@ def build_api_payload(suites: List[SuiteRun]) -> dict[str, Any]:
         "failureInsights": failure_insights,
         "recommendations": recommendations,
     }
+
+    spend_snapshot = _load_spend_tracker()
+    if spend_snapshot:
+        events = spend_snapshot.get("events") or []
+        last_event = events[0] if events else None
+        payload["openaiSpend"] = {
+            "totalUsd": round(float(spend_snapshot.get("total_spend_usd", 0.0)), 6),
+            "budgetUsd": spend_snapshot.get("budget_usd"),
+            "remainingUsd": spend_snapshot.get("remaining_budget_usd"),
+            "lastEvent": last_event,
+        }
+
     return payload
 
 
@@ -572,8 +1348,14 @@ def get_suite_runs(suite: str) -> List[SuiteRun]:
         return run_custom_agents_suite()
     if suite == "crisis":
         return run_crisis_command_suite()
+    if suite == "math":
+        return [run_math_reasoning_suite()]
+    if suite == "coding":
+        return [run_coding_challenges_suite()]
     runs: List[SuiteRun] = [run_output_evaluation_suite(), run_translation_suite()]
     if suite == "all":
+        runs.append(run_math_reasoning_suite())
+        runs.append(run_coding_challenges_suite())
         runs.extend(run_custom_agents_suite())
         runs.extend(run_crisis_command_suite())
     return runs

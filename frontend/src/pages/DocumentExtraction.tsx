@@ -60,7 +60,8 @@ type DashboardPayload = {
 
 const DATA_SOURCES = [
   { id: 'document', label: 'Invoice Judge', path: '/data/document_extraction_benchmarks.json' },
-  { id: 'gsm8k', label: 'GSM8K Judge', path: '/data/gsm8k_benchmarks.json' }
+  { id: 'gsm8k', label: 'GSM8K Judge', path: '/data/gsm8k_benchmarks.json' },
+  { id: 'math_reasoning', label: 'Math Reasoning Judge', path: '/data/math_reasoning_benchmarks.json' }
 ] as const;
 
 const SOURCE_LABEL: Record<string, string> = Object.fromEntries(DATA_SOURCES.map((source) => [source.id, source.label]));
