@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2025-10-02T06:53:52.639893+00:00",
+  "generatedAt": "2025-10-03T04:56:14.422017+00:00",
   "summary": {
     "total": 4,
     "success": 4,
@@ -8,14 +8,14 @@
   },
   "benchmarks": [
     {
-      "id": "606ca4d5-2bad-4a85-92b6-75613f7c0caa",
+      "id": "b0b8200e-bde5-4772-a253-bb9d87763bc8",
       "name": "Addition Accuracy",
       "iterations": 3,
       "successRate": 1.0,
       "status": "success",
-      "updatedAt": "2025-10-02T06:53:52.639745+00:00",
+      "updatedAt": "2025-10-03T04:56:14.421924+00:00",
       "suite": "output_evaluation",
-      "latencySeconds": 0.002,
+      "latencySeconds": 0.001,
       "tokensUsed": 18.0,
       "costUsd": 5.4e-05,
       "confidenceReported": null,
@@ -23,34 +23,34 @@
       "errorFlags": [],
       "history": [
         {
-          "timestamp": "2025-10-02T01:53:52.630655",
+          "timestamp": "2025-10-02T23:56:14.416075",
           "objective": "equals_15",
           "result": true,
           "message": null,
           "expected": "15",
           "actual": "15",
           "failureCategory": null,
-          "latencySeconds": 0.001698
+          "latencySeconds": 0.001059
         },
         {
-          "timestamp": "2025-10-02T01:53:52.630998",
+          "timestamp": "2025-10-02T23:56:14.416394",
           "objective": "equals_15",
           "result": true,
           "message": null,
           "expected": "15",
           "actual": "15",
           "failureCategory": null,
-          "latencySeconds": 0.001698
+          "latencySeconds": 0.001059
         },
         {
-          "timestamp": "2025-10-02T01:53:52.631322",
+          "timestamp": "2025-10-02T23:56:14.416568",
           "objective": "equals_15",
           "result": true,
           "message": null,
           "expected": "15",
           "actual": "15",
           "failureCategory": null,
-          "latencySeconds": 0.001698
+          "latencySeconds": 0.001059
         }
       ],
       "inputs": {
@@ -59,12 +59,53 @@
       "latestFailure": null
     },
     {
-      "id": "c6e5c85e-21c4-459a-a047-d3bf91301984",
+      "id": "c8c54e6c-ffec-403b-a785-02b3c5f1ca92",
       "name": "Multiplication Explanation",
       "iterations": 2,
       "successRate": 1.0,
       "status": "success",
-      "updatedAt": "2025-10-02T06:53:52.639866+00:00",
+      "updatedAt": "2025-10-03T04:56:14.421959+00:00",
+      "suite": "output_evaluation",
+      "latencySeconds": 0.002,
+      "tokensUsed": 20.0,
+      "costUsd": 6e-05,
+      "confidenceReported": null,
+      "confidenceCalibrated": 1.0,
+      "errorFlags": [],
+      "history": [
+        {
+          "timestamp": "2025-10-02T23:56:14.418742",
+          "objective": "explanation_pattern",
+          "result": true,
+          "message": null,
+          "expected": "Multiplying \\d+ \u00d7 \\d+ = \\d+",
+          "actual": "Multiplying 4 \u00d7 6 = 24",
+          "failureCategory": null,
+          "latencySeconds": 0.001601
+        },
+        {
+          "timestamp": "2025-10-02T23:56:14.419128",
+          "objective": "explanation_pattern",
+          "result": true,
+          "message": null,
+          "expected": "Multiplying \\d+ \u00d7 \\d+ = \\d+",
+          "actual": "Multiplying 4 \u00d7 6 = 24",
+          "failureCategory": null,
+          "latencySeconds": 0.001601
+        }
+      ],
+      "inputs": {
+        "problem": "4*6"
+      },
+      "latestFailure": null
+    },
+    {
+      "id": "59cfea29-531e-4700-9be2-9eb4e48763b6",
+      "name": "Comprehensive Calculator Test",
+      "iterations": 1,
+      "successRate": 1.0,
+      "status": "success",
+      "updatedAt": "2025-10-03T04:56:14.421984+00:00",
       "suite": "output_evaluation",
       "latencySeconds": 0.001,
       "tokensUsed": 20.0,
@@ -74,75 +115,34 @@
       "errorFlags": [],
       "history": [
         {
-          "timestamp": "2025-10-02T01:53:52.632647",
-          "objective": "explanation_pattern",
-          "result": true,
-          "message": null,
-          "expected": "Multiplying \\d+ \u00d7 \\d+ = \\d+",
-          "actual": "Multiplying 4 \u00d7 6 = 24",
-          "failureCategory": null,
-          "latencySeconds": 0.001343
-        },
-        {
-          "timestamp": "2025-10-02T01:53:52.632984",
-          "objective": "explanation_pattern",
-          "result": true,
-          "message": null,
-          "expected": "Multiplying \\d+ \u00d7 \\d+ = \\d+",
-          "actual": "Multiplying 4 \u00d7 6 = 24",
-          "failureCategory": null,
-          "latencySeconds": 0.001343
-        }
-      ],
-      "inputs": {
-        "problem": "4*6"
-      },
-      "latestFailure": null
-    },
-    {
-      "id": "2efdf5ea-c92a-40ac-983e-675c3a05af74",
-      "name": "Comprehensive Calculator Test",
-      "iterations": 1,
-      "successRate": 1.0,
-      "status": "success",
-      "updatedAt": "2025-10-02T06:53:52.639877+00:00",
-      "suite": "output_evaluation",
-      "latencySeconds": 0.002,
-      "tokensUsed": 20.0,
-      "costUsd": 6e-05,
-      "confidenceReported": null,
-      "confidenceCalibrated": 1.0,
-      "errorFlags": [],
-      "history": [
-        {
-          "timestamp": "2025-10-02T01:53:52.635332",
+          "timestamp": "2025-10-02T23:56:14.419852",
           "objective": "correct_answer",
           "result": true,
           "message": null,
           "expected": "24",
           "actual": "24",
           "failureCategory": null,
-          "latencySeconds": 0.002611
+          "latencySeconds": 0.000734
         },
         {
-          "timestamp": "2025-10-02T01:53:52.635623",
+          "timestamp": "2025-10-02T23:56:14.419950",
           "objective": "success_status",
           "result": true,
           "message": null,
           "expected": "success",
           "actual": "success",
           "failureCategory": null,
-          "latencySeconds": 0.002342
+          "latencySeconds": 0.000684
         },
         {
-          "timestamp": "2025-10-02T01:53:52.635899",
+          "timestamp": "2025-10-02T23:56:14.420010",
           "objective": "valid_explanation",
           "result": true,
           "message": null,
           "expected": ".*\\d+.*=.*\\d+.*",
           "actual": "Multiplying 4 \u00d7 6 = 24",
           "failureCategory": null,
-          "latencySeconds": 0.002074
+          "latencySeconds": 0.000657
         }
       ],
       "inputs": {
@@ -151,14 +151,14 @@
       "latestFailure": null
     },
     {
-      "id": "0453cabf-24d7-4671-9e03-75fddf3bc887",
+      "id": "a54668a2-dc60-4d57-ae52-71e8a9a938ad",
       "name": "Spanish Greeting",
       "iterations": 1,
       "successRate": 1.0,
       "status": "success",
-      "updatedAt": "2025-10-02T06:53:52.639888+00:00",
+      "updatedAt": "2025-10-03T04:56:14.422005+00:00",
       "suite": "output_evaluation",
-      "latencySeconds": 0.002,
+      "latencySeconds": 0.0,
       "tokensUsed": 25.0,
       "costUsd": 7.5e-05,
       "confidenceReported": null,
@@ -166,24 +166,24 @@
       "errorFlags": [],
       "history": [
         {
-          "timestamp": "2025-10-02T01:53:52.638435",
+          "timestamp": "2025-10-02T23:56:14.421369",
           "objective": "exact_translation",
           "result": true,
           "message": null,
           "expected": "hola",
           "actual": "hola",
           "failureCategory": null,
-          "latencySeconds": 0.001768
+          "latencySeconds": 0.000467
         },
         {
-          "timestamp": "2025-10-02T01:53:52.638729",
+          "timestamp": "2025-10-02T23:56:14.421425",
           "objective": "status_flag",
           "result": true,
           "message": null,
           "expected": "translated",
           "actual": "translated",
           "failureCategory": null,
-          "latencySeconds": 0.001485
+          "latencySeconds": 0.000409
         }
       ],
       "inputs": {
