@@ -43,7 +43,16 @@ const SUITE_OPTIONS = [
 ];
 
 export default function ControlRoom() {
-  const { fetchBenchmarks, loading, error, summary } = useBenchmarkStore();
+  const {
+    fetchBenchmarks,
+    loading,
+    error,
+    summary,
+    benchmarks,
+    liveRuns,
+    failureInsights,
+    recommendations
+  } = useBenchmarkStore();
   const [threshold, setThreshold] = useState(() => getStoredThreshold());
   const [llmStatus, setLLMStatus] = useState<'idle' | 'loading' | 'ok' | 'down'>('idle');
   const [llmLatency, setLLMLatency] = useState<number | null>(null);
@@ -100,6 +109,46 @@ export default function ControlRoom() {
     ],
     [summary]
   );
+
+  const suitePayload = useMemo(
+    () => ({
+      summary,
+      liveRuns,
+      failureInsights,
+      recommendations,
+      benchmarks
+    }),
+    [summary, liveRuns, failureInsights, recommendations, benchmarks]
+  );
+
+  const prettifiedSuitePayload = useMemo(
+    () => JSON.stringify(suitePayload, null, 2),
+    [suitePayload]
+  );
+
+  const hasSuiteData = useMemo(
+    () =>
+      Boolean(
+        summary.total ||
+          liveRuns.length ||
+          failureInsights.length ||
+          recommendations.length ||
+          benchmarks.length
+      ),
+    [summary.total, liveRuns.length, failureInsights.length, recommendations.length, benchmarks.length]
+  );
+
+  const handleDownloadSuiteJson = () => {
+    const blob = new Blob([prettifiedSuitePayload], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'reliability-suite-snapshot.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const renderLLMStatus = () => {
     switch (llmStatus) {
@@ -220,6 +269,37 @@ export default function ControlRoom() {
             </div>
           </CardContent>
         </Card>
+
+        <Card className="border bg-card/80 p-6 shadow-sm">
+          <CardHeader className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              <CardTitle>Suite Snapshot JSON</CardTitle>
+              <CardDescription>
+                Share this prettified payload with stakeholders who need the raw benchmark data.
+              </CardDescription>
+            </div>
+            <Button
+              variant="secondary"
+              onClick={handleDownloadSuiteJson}
+              disabled={!hasSuiteData}
+              className="w-full sm:w-auto"
+            >
+              Download JSON
+            </Button>
+          </CardHeader>
+          <CardContent>
+            {hasSuiteData ? (
+              <pre className="max-h-80 overflow-auto rounded-lg border bg-muted/40 p-4 font-mono text-xs leading-relaxed text-muted-foreground">
+                {prettifiedSuitePayload}
+              </pre>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                Launch a suite to populate the summary, live runs, and recommendations snapshot.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {SUITE_OPTIONS.map((suite) => (
             <Card key={suite.id} className="h-full border-brand-primary/10">

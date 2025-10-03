@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { Badge, type BadgeProps } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { getBenchmarks } from '@/lib/api';
 import type { BenchmarkRecord } from '@/types/benchmarks';
+import { JsonPanel } from '@/components/JsonPanel';
 
 const STATUS_LABELS: Record<BenchmarkRecord['status'], { label: string; variant: BadgeProps['variant'] }> = {
   success: { label: 'Passing', variant: 'success' },
@@ -17,6 +18,7 @@ export default function Benchmarks() {
   const [benchmarks, setBenchmarks] = useState<BenchmarkRecord[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string>('all');
 
   useEffect(() => {
     let mounted = true;
@@ -46,6 +48,17 @@ export default function Benchmarks() {
   const total = benchmarks.length;
   const failing = benchmarks.filter((record) => record.status === 'failed').length;
   const passing = benchmarks.filter((record) => record.status === 'success').length;
+
+  const selectedRecord = useMemo(
+    () => benchmarks.find((record) => record.id === selectedId),
+    [benchmarks, selectedId]
+  );
+
+  const panelTitle = selectedId === 'all'
+    ? 'Full benchmark snapshot (array)'
+    : selectedRecord
+      ? `Benchmark · ${selectedRecord.name}`
+      : 'Benchmark not found';
 
   return (
     <div className="space-y-6">
@@ -138,6 +151,59 @@ export default function Benchmarks() {
                   })}
                 </TableBody>
               </Table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Raw JSON Inspector</CardTitle>
+          <CardDescription>
+            Explore the exact payload saved by the backend. Perfect when you need to deep dive into telemetry details
+            or debug a single benchmark without leaving the console.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <p className="text-sm text-muted-foreground">Loading snapshot…</p>
+          ) : benchmarks.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              Once you run a suite from the Control Room, the raw benchmark data will appear here for inspection.
+            </p>
+          ) : (
+            <div className="space-y-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-[hsl(var(--heading))]">Choose a payload to inspect</p>
+                  <p className="text-xs text-muted-foreground">
+                    Select any benchmark to view the pretty-printed JSON exactly as the API returns it.
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <label htmlFor="json-payload-select" className="sr-only">
+                    JSON payload selector
+                  </label>
+                  <select
+                    id="json-payload-select"
+                    className="min-w-[220px] rounded-md border border-input bg-background px-3 py-2 text-sm text-[hsl(var(--body))] shadow-sm focus:outline-none focus:ring-2 focus:ring-[hsl(var(--accent))] focus:ring-offset-2"
+                    value={selectedId}
+                    onChange={(event) => setSelectedId(event.target.value)}
+                  >
+                    <option value="all">All benchmarks (JSON array)</option>
+                    {benchmarks.map((record) => (
+                      <option key={record.id} value={record.id}>
+                        {record.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <JsonPanel
+                title={panelTitle}
+                data={selectedId === 'all' ? benchmarks : selectedRecord ?? {}}
+                description="Collapse, copy, or deep dive into the structured payload at your own pace."
+              />
             </div>
           )}
         </CardContent>
