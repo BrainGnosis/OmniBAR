@@ -1,0 +1,32 @@
+# Python build artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Virtual environments
+.venv/
+.envrc
+pip-wheel-metadata/
+
+# IDE & editor settings
+.vscode/
+.idea/
+*.swp
+
+# Logs & reports
+*.log
+logs/
+
+# Environment & secrets
+.env
+.env.*
+*.key
+
+# MacOS
+.DS_Store

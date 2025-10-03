@@ -1,0 +1,227 @@
+{
+  "runs": [
+    {
+      "iteration": "Iteration 1",
+      "scores": {
+        "content": 0.32,
+        "structure": 0.28,
+        "completeness": 0.30,
+        "accuracy": 0.27,
+        "overall": 0.29
+      },
+      "avgLength": 980,
+      "sample": "{...extraction text...}",
+      "judgeNotes": ["Misses sections", "Not structured", "Hallucinated stats"],
+      "agent": "Baseline",
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.32,
+          "input": "Why Language Models Hallucinate...",
+          "output": "Summary missing methodology details...",
+          "notes": "Key sections omitted."
+        },
+        {
+          "name": "Structure",
+          "score": 0.28,
+          "input": "Prompt iteration 1",
+          "output": "Narrative paragraphs",
+          "notes": "No JSON structure."
+        },
+        {
+          "name": "Completeness",
+          "score": 0.30,
+          "input": "Expected sections",
+          "output": "Missing limitations and future work",
+          "notes": "Incomplete coverage"
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.27,
+          "input": "Hallucination metrics",
+          "output": "Incorrect percentages",
+          "notes": "Hallucinated stats"
+        }
+      ]
+    },
+    {
+      "iteration": "Iteration 2",
+      "scores": {
+        "content": 0.55,
+        "structure": 0.50,
+        "completeness": 0.58,
+        "accuracy": 0.52,
+        "overall": 0.54
+      },
+      "avgLength": 1450,
+      "sample": "{...}",
+      "judgeNotes": ["Better fields", "Still loose format"],
+      "agent": "Schema Hints",
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.55,
+          "input": "Prompt iteration 2",
+          "output": "Captures more findings",
+          "notes": "Content coverage improved"
+        },
+        {
+          "name": "Structure",
+          "score": 0.50,
+          "input": "Expected JSON",
+          "output": "Mixed structure",
+          "notes": "Some array formatting errors"
+        },
+        {
+          "name": "Completeness",
+          "score": 0.58,
+          "input": "Checklist",
+          "output": "Captures methodology",
+          "notes": "Still missing limitations"
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.52,
+          "input": "Reported metrics",
+          "output": "Closer to source",
+          "notes": "Minor rounding issues"
+        }
+      ]
+    },
+    {
+      "iteration": "Iteration 3",
+      "scores": {
+        "content": 0.68,
+        "structure": 0.80,
+        "completeness": 0.70,
+        "accuracy": 0.62,
+        "overall": 0.70
+      },
+      "avgLength": 2100,
+      "sample": "{\"title\":\"...\",\"authors\":[\"...\"],...}",
+      "judgeNotes": ["JSON improves structure"],
+      "agent": "Tool Augmented",
+      "agents": [
+        {
+          "agent": "Tool Augmented",
+          "scores": {
+            "content": 0.68,
+            "structure": 0.80,
+            "completeness": 0.70,
+            "accuracy": 0.62,
+            "overall": 0.70
+          }
+        },
+        {
+          "agent": "Tool Augmented v2",
+          "scores": {
+            "content": 0.65,
+            "structure": 0.78,
+            "completeness": 0.69,
+            "accuracy": 0.60,
+            "overall": 0.68
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.68,
+          "input": "Extracted sections",
+          "output": "Covers key findings",
+          "notes": "Content meets expectations"
+        },
+        {
+          "name": "Structure",
+          "score": 0.80,
+          "input": "JSON schema",
+          "output": "Valid JSON",
+          "notes": "Schema adhered"
+        },
+        {
+          "name": "Completeness",
+          "score": 0.70,
+          "input": "Section checklist",
+          "output": "Includes limitations",
+          "notes": "Slight gap in future work"
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.62,
+          "input": "Benchmark metrics",
+          "output": "Correct values",
+          "notes": "Minor paraphrasing"
+        }
+      ]
+    },
+    {
+      "iteration": "Iteration 4",
+      "scores": {
+        "content": 0.78,
+        "structure": 0.88,
+        "completeness": 0.82,
+        "accuracy": 0.76,
+        "overall": 0.81
+      },
+      "avgLength": 2600,
+      "sample": "{\"bibliographic\":{...},\"results\":{...}}",
+      "judgeNotes": ["Best overall", "Most accurate", "Valid JSON"],
+      "agent": "Hybrid",
+      "agents": [
+        {
+          "agent": "Hybrid",
+          "scores": {
+            "content": 0.78,
+            "structure": 0.88,
+            "completeness": 0.82,
+            "accuracy": 0.76,
+            "overall": 0.81
+          }
+        },
+        {
+          "agent": "Hybrid + Retrieval",
+          "scores": {
+            "content": 0.80,
+            "structure": 0.90,
+            "completeness": 0.84,
+            "accuracy": 0.79,
+            "overall": 0.83
+          }
+        }
+      ],
+      "objectives": [
+        {
+          "name": "Content",
+          "score": 0.78,
+          "input": "Prompt iteration 4",
+          "output": "Full coverage",
+          "notes": "Ready for production"
+        },
+        {
+          "name": "Structure",
+          "score": 0.88,
+          "input": "JSON schema",
+          "output": "Fully compliant",
+          "notes": "Strong consistency"
+        },
+        {
+          "name": "Completeness",
+          "score": 0.82,
+          "input": "Checklist",
+          "output": "All sections captured",
+          "notes": "Meets acceptance criteria"
+        },
+        {
+          "name": "Accuracy",
+          "score": 0.76,
+          "input": "Metrics",
+          "output": "Precise values",
+          "notes": "Matches source"
+        }
+      ]
+    }
+  ],
+  "model": "gpt-4",
+  "paper": "Why Language Models Hallucinate...",
+  "timestamp": "2025-10-01T20:00:00Z"
+}

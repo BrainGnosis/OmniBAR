@@ -1,0 +1,30 @@
+# Dependency directories
+node_modules/
+
+# Build output
+/dist
+/.vite
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Testing coverage
+coverage/
+
+# TypeScript incremental build info
+*.tsbuildinfo

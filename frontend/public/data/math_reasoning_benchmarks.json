@@ -1,0 +1,101 @@
+{
+  "generatedAt": "2025-01-05T12:00:00Z",
+  "iterations": [
+    {
+      "id": "math-quadratic-explainer",
+      "label": "Quadratic Explainer",
+      "strategy": "Guided step-by-step factoring",
+      "model": "gpt-4o-mini",
+      "run_seconds": 2.7,
+      "avg_output_tokens": 182,
+      "scores": {
+        "content": 0.92,
+        "structure": 0.88,
+        "completeness": 0.9,
+        "accuracy": 0.94,
+        "overall": 0.91
+      },
+      "metadata": {
+        "summary": "Explains solving x^2 - 4 = 0 using factoring and double-checks solutions.",
+        "radar": [
+          { "metric": "Reasoning", "value": 0.93 },
+          { "metric": "Clarity", "value": 0.9 },
+          { "metric": "Structure", "value": 0.88 },
+          { "metric": "Verification", "value": 0.94 }
+        ]
+      },
+      "sample": {
+        "prompt": "Solve x^2 - 4 = 0 and explain your approach.",
+        "response": "Factor the polynomial into (x-2)(x+2)=0. The solutions are x = 2 and x = -2. Substituting each value back into x^2 - 4 confirms the equation is satisfied."
+      },
+      "judgeNotes": [
+        "Shows factoring and substitution checks",
+        "Response stays tightly focused on the math task"
+      ],
+      "objectives": [
+        {
+          "name": "Correct Roots",
+          "score": 0.95,
+          "input": "Equation",
+          "output": "x = 2 and x = -2",
+          "notes": "Both solutions captured with supporting work"
+        },
+        {
+          "name": "Explanation Quality",
+          "score": 0.9,
+          "input": "Reasoning steps",
+          "output": "Factorization followed by substitution",
+          "notes": "Minor opportunity to mention discriminant"
+        }
+      ]
+    },
+    {
+      "id": "math-limit-tutor",
+      "label": "Limit Tutor",
+      "strategy": "Canonical sine limit reference",
+      "model": "gpt-4o-mini",
+      "run_seconds": 1.9,
+      "avg_output_tokens": 134,
+      "scores": {
+        "content": 0.88,
+        "structure": 0.86,
+        "completeness": 0.82,
+        "accuracy": 0.9,
+        "overall": 0.86
+      },
+      "metadata": {
+        "summary": "Walks through the classic limit of sin(x)/x as x approaches 0 and cites the squeeze theorem.",
+        "radar": [
+          { "metric": "Reasoning", "value": 0.89 },
+          { "metric": "Clarity", "value": 0.85 },
+          { "metric": "Structure", "value": 0.86 },
+          { "metric": "Verification", "value": 0.84 }
+        ]
+      },
+      "sample": {
+        "prompt": "Evaluate the limit of sin(x)/x as x approaches 0.",
+        "response": "Using the squeeze theorem or the Maclaurin series for sin(x), the limit is 1."
+      },
+      "judgeNotes": [
+        "Highlights the squeeze theorem",
+        "Could expand on geometric intuition"
+      ],
+      "objectives": [
+        {
+          "name": "Correct Limit",
+          "score": 0.92,
+          "input": "Limit statement",
+          "output": "1",
+          "notes": "States the correct numerical limit"
+        },
+        {
+          "name": "Method Citation",
+          "score": 0.8,
+          "input": "Supporting reasoning",
+          "output": "Squeeze theorem reference",
+          "notes": "Brief mention; could include more detail"
+        }
+      ]
+    }
+  ]
+}
