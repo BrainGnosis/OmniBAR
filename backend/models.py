@@ -6,7 +6,7 @@ from typing import Any
 from sqlalchemy import JSON, Column, DateTime, Float, Integer, String, Text, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
-from .database import Base
+from .db import Base
 
 
 class LatteRun(Base):

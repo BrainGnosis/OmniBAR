@@ -4,8 +4,79 @@ from datetime import datetime
 from typing import Any
 
 from pydantic import BaseModel, Field
+from typing import Optional, List, Dict, Any
 
 
+# Benchmark Schemas
+class Benchmark(BaseModel):
+    id: str = Field(..., example="calc-string-check")
+    name: str = Field(..., example="Addition String Check")
+    iterations: int = Field(..., example=5)
+    successRate: float = Field(..., example=0.93)
+    status: str = Field(..., example="success")
+    updatedAt: str = Field(..., example="2025-10-07T13:45:00Z")
+    suite: str = Field(..., example="output")
+    latencySeconds: float = Field(..., example=0.42)
+    tokensUsed: int = Field(..., example=621)
+    costUsd: float = Field(..., example=0.00015)
+    confidenceReported: float = Field(..., example=0.89)
+    confidenceCalibrated: float = Field(..., example=0.87)
+    history: List[HistoryEntry] = Field(
+        ...,
+        example=[
+            {
+                "timestamp": "2025-10-07T13:40:00Z",
+                "objective": "Check 1",
+                "result": True,
+                "message": "Objective evaluated",
+            }
+        ],
+    )
+    latestFailure: Optional[Dict[str, Any]] = Field(
+        None,
+        example={
+            "objective": "Addition accurate",
+            "reason": "Mismatch between expected string and response.",
+            "category": "quality",
+        },
+    )
+
+
+class HistoryEntry(BaseModel):
+    timestamp: str
+    objective: str
+    result: bool
+    message: str
+
+
+class Benchmark(BaseModel):
+    id: str
+    name: str
+    iterations: int
+    successRate: float
+    status: str
+    updatedAt: str
+    suite: str
+    latencySeconds: float
+    tokensUsed: int
+    costUsd: float
+    confidenceReported: float
+    confidenceCalibrated: float
+    history: List[HistoryEntry]
+    latestFailure: Optional[Dict[str, Any]] = None
+
+
+class BenchmarkSuitePayload(BaseModel):
+    benchmarks: List[Benchmark]
+    summary: Dict[str, int]
+    liveRuns: List[Dict[str, Any]]
+    failureInsights: List[Dict[str, Any]]
+    recommendations: List[Dict[str, Any]]
+    generatedAt: str
+    threshold: Optional[float] = None
+
+
+# for Latte
 class LatteCreateRequest(BaseModel):
     system_prompt: str = Field(..., description="System prompt used for the run")
     user_prompt: str = Field(..., description="User prompt sent to the assistant")

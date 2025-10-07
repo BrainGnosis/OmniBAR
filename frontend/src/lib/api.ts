@@ -1,4 +1,13 @@
-import type { AgentInput, BenchmarkRow, RunRecord } from '@/types';
+import type {
+  AgentInput,
+  BenchmarkRow,
+  LatteConfig,
+  LatteCreatePayload,
+  LatteRollups,
+  LatteRun,
+  LatteRunListResponse,
+  RunRecord
+} from '@/types';
 import type {
   BenchmarkRecord,
   RunBenchmarkSuiteResponse,
@@ -77,4 +86,38 @@ export async function runLLMSmokeTest(): Promise<{ status: string; latency: numb
     credentials: 'include',
   });
   return handleResponse(response);
+}
+
+export async function getLatteConfig(): Promise<LatteConfig> {
+  const response = await fetch(`${API_BASE}/config`, {
+    credentials: 'include',
+  });
+  return handleResponse<LatteConfig>(response);
+}
+
+export async function getLatteRuns(): Promise<LatteRun[]> {
+  const response = await fetch(`${API_BASE}/lattes`, {
+    credentials: 'include',
+  });
+  const payload = await handleResponse<LatteRunListResponse>(response);
+  return payload.runs;
+}
+
+export async function getLatteRollups(): Promise<LatteRollups> {
+  const response = await fetch(`${API_BASE}/analytics/rollups`, {
+    credentials: 'include',
+  });
+  return handleResponse<LatteRollups>(response);
+}
+
+export async function createLatteRun(payload: LatteCreatePayload): Promise<LatteRun> {
+  const response = await fetch(`${API_BASE}/lattes`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(payload),
+  });
+  return handleResponse<LatteRun>(response);
 }

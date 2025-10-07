@@ -201,7 +201,7 @@ export default function ControlRoom() {
                 Run Output Benchmarks
               </Button>
               <Button variant="secondary" className="gap-2">
-                <BoltIcon className="h-4 w-4 text-brand-accent" />
+                <BoltIcon className="h-4 w-4 text-brand-accent"  title="This button is just for show right now—stay tuned!"/>
                 Schedule Reliability Review
               </Button>
               <Button variant="text" className="text-sm">
@@ -305,19 +305,20 @@ export default function ControlRoom() {
             <Card key={suite.id} className="h-full border-brand-primary/10">
               <CardHeader>
                 <CardTitle>{suite.title}</CardTitle>
-                <CardDescription>{suite.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  variant="primary"
-                  disabled={loading}
-                  onClick={() => runSuite(suite.id)}
-                  className="gap-2"
-                >
-                  <ArrowPathIcon className={cn('h-4 w-4', loading && 'animate-spin')} />
-                  {suite.cta}
-                </Button>
-              </CardContent>
+              <CardDescription>{suite.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button
+                variant="primary"
+                disabled={loading}
+                onClick={() => runSuite(suite.id)}
+                className="gap-2"
+                title="Kick off this benchmark suite with OmniBAR."
+              >
+                <ArrowPathIcon className={cn('h-4 w-4', loading && 'animate-spin')} />
+                {suite.cta}
+              </Button>
+            </CardContent>
             </Card>
           ))}
         </section>
@@ -348,7 +349,14 @@ export default function ControlRoom() {
             title="Reliability Engineer, AgentOS"
             description="Own reliability instrumentation for enterprise agent deployments."
             tags={['Hybrid · NYC', 'AgentOS', 'Observability']}
-            actions={<Button variant="secondary">View role</Button>}
+            actions={
+              <Button
+                variant="secondary"
+                title="This button is just for show right now—stay tuned!"
+              >
+                View role
+              </Button>
+            }
           />
         </section>
 

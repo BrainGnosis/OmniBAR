@@ -7,6 +7,7 @@ const NAV_ITEMS = [
   { id: 'benchmarks', label: 'Benchmarks' },
   { id: 'runs', label: 'Runs' },
   { id: 'documents', label: 'Doc Extraction' },
+  { id: 'latte', label: 'Latte Lab' },
 ] as const;
 
 type Route = typeof NAV_ITEMS[number]['id'];
