@@ -218,6 +218,44 @@ benchmarker.print_logger_summary()
 
 ## Quick Start
 
+### Latte Lab – Prompt Trace Scoring with OmniBAR
+
+Latte Lab is a lightweight full-stack experience built on top of OmniBAR to experiment with prompt executions, store their history, and review OmniBAR-derived scores.
+
+**Backend**
+
+1. Install dependencies (the backend can be run in isolation from the rest of the repo):
+
+   ```bash
+   pip install -r backend/requirements.txt
+   ```
+
+2. Copy `backend/.env.example` to `backend/.env` and provide any overrides. With `MOCK_MODE=true` (default) the server uses deterministic mock completions and OmniBAR scoring, so you can explore the full flow without spending API credits. Set an `OPENAI_API_KEY` and flip `MOCK_MODE=false` once you are ready for live calls.
+
+3. Start the API:
+
+   ```bash
+   uvicorn backend.app:app --reload
+   ```
+
+   Swagger docs are available at `http://localhost:8000/docs`.
+
+**Frontend**
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The UI lets you brew new “lattes” by providing system/user prompts and model settings, view OmniBAR scores with Barista’s Notes, and inspect historical rollups.
+
+Run the lightweight backend checks with:
+
+```bash
+pytest tests/latte_lab -q
+```
+
 Here's a complete example demonstrating OmniBAR's core capabilities:
 
 ```python

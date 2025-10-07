@@ -27,6 +27,9 @@ logs/
 .env
 .env.*
 *.key
+backend/data/
+!.env.example
+!backend/.env.example
 
 # MacOS
 .DS_Store
