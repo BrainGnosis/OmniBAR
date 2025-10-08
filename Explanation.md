@@ -76,6 +76,15 @@ The goal is to provide transparent, reproducible insights into how AI agents per
 
 Portions of this project were scaffolded with the help of Codex and ChatGPT to accelerate setup and boilerplate generation. All core logic, scoring integration, and design decisions were implemented and verified manually. This Explanation file was drafted with Codex assistance and reviewed line-by-line before submission.
 
+## UI / UX Design Notes
+
+This project was built with BrainGnosis’ UI principles in mind:
+- Modular React components designed for reuse across AgentOS
+- Responsive layout with consistent spacing and typography
+- Accessible controls (keyboard navigation + ARIA labels)
+- Visual feedback for every app state (loading, mock, error, success)
+- Emphasis on clarity and performance to make AI workflows intuitive
+
 ### Demo & Supporting Assets
 
 - Demo video (≤5 min) with voiceover: _link supplied alongside submission_.
