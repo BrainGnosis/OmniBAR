@@ -4,7 +4,92 @@
 This project extends the open-source OmniBAR framework with a full Reliability Console: a frontend dashboard and backend APIs that make benchmarking and observability accessible to both developers and scientists.
 The goal is to provide transparent, reproducible insights into how AI agents perform across reliability dimensions (latency, cost, accuracy, completeness, etc.), and to make raw outputs accessible without digging into backend logs.
 
-# Control Room
+### Setup & Run Instructions
+
+1. **Clone & bootstrap**
+   ```bash
+   git clone https://github.com/BrainGnosis/OmniBAR.git
+   cd OmniBAR
+   python3 -m venv .venv && source .venv/bin/activate
+   pip install -e .[dev]
+   ```
+2. **Backend**
+   ```bash
+   export MOCK_MODE=true            # flip to false for live scoring
+   export OPENAI_API_KEY="sk-..."   # required only when MOCK_MODE=false
+   python -m uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000
+   ```
+3. **Frontend**
+   ```bash
+   cd frontend
+   npm install
+   VITE_API_BASE_URL="http://localhost:8000" npm run dev
+   ```
+4. Visit <http://localhost:5173>. Start in mock mode to verify wiring, then switch OmniBrew’s dropdown to live mode once the OpenAI key responds.
+
+### Assumptions
+
+- Reviewers have Python 3.10+, Node.js 18+, npm, and can install dependencies from the terminal.
+- Local SQLite (for OmniBrew run history) and in-memory lists (for benchmark history) satisfy persistence requirements.
+- OpenAI usage stays under the \$10 key limit noted in the brief; live scoring assumes outbound network access and a valid key.
+- Execution targets localhost; outbound calls to OpenAI occur only when OmniBrew live mode is enabled.
+
+### Trade-offs
+
+- Focused on core scoring UX—skipped auth, multi-tenancy, and production deployment scripts.
+- Accepted SQLite/in-memory storage to avoid database provisioning overhead.
+- Synchronous scoring (no background queue) is acceptable for short prompts; long-running suite orchestration was out of scope.
+- UI favors clarity over exhaustive accessibility polish; future work would include keyboard trap audits and contrast tuning.
+
+### Architecture Overview
+
+- **Backend (`backend/`)**
+  - FastAPI app (`backend/app.py`) exposes Control Room suites, OmniBrew scoring, run history, and a JSON download endpoint for OmniBrew logs.
+  - Services (`backend/services/latte_service.py`, `backend/services/scoring.py`) wrap call-and-score behavior plus OmniBAR LLM-judge evaluation.
+  - SQLite persistence is handled by SQLAlchemy (`backend/database.py`, `backend/models.py`). Tables are auto-created on startup; no migrations required for the demo scope.
+- **Frontend (`frontend/`)**
+  - `AppShell` manages navigation and environment badges. Pages map to workflows: Control Room, Benchmarks, Runs, Document Extraction, and OmniBrew.
+  - The API layer (`frontend/src/lib/api.ts`) centralizes REST fetches, handles errors, and ensures consistent credential usage.
+  - State is held per page via React hooks with shadcn/ui + Tailwind components for quick iteration.
+- **Data Flow**
+  1. User submits input (suite trigger or OmniBrew form).
+  2. Backend calls the LLM (mock/OpenAI), evaluates with OmniBAR, persists the run, and responds with telemetry (latency, tokens, breakdown).
+  3. Frontend updates UI panels, charts, and tables.
+  4. Users can export the full OmniBrew run log as a CSV for DFL reproducibility straight from the interface.
+- **Stack:** FastAPI + SQLAlchemy + SQLite on the backend; React + Vite + shadcn/ui on the frontend, with Tailwind for styling.
+- **Error & mode handling:** FastAPI returns structured errors consumed by a shared response handler; OmniBrew surfaces banners when requests fail and falls back to canned data. Mock scoring is forced when `MOCK_MODE=true` (env) or the dropdown selects “Mock,” while live mode requires a valid OpenAI key and handles 401/429 responses by displaying the error message.
+
+### What Was Cut (and why)
+
+- No hosted deployment IaC/scripts—assignment stressed local execution.
+- No role-based access control or multi-tenant separation to keep the stack lightweight.
+- No async queues for long-running suites; synthetic benchmark payloads keep latency low.
+- Demo video hosted separately to avoid bloating the repository.
+
+### Tests & Improvement Notes
+
+- Backend: run `pytest` to exercise OmniBAR’s objective suites.
+- Frontend: `npm run test:e2e` (after `npx playwright install`) covers key navigation and transparency states.
+- Future enhancements: add focused integration tests for OmniBrew submissions and backend smoke tests for live scoring fallbacks.
+
+### AI Assistance
+
+Portions of this project were scaffolded with the help of Codex and ChatGPT to accelerate setup and boilerplate generation. All core logic, scoring integration, and design decisions were implemented and verified manually. This Explanation file was drafted with Codex assistance and reviewed line-by-line before submission.
+
+### Demo & Supporting Assets
+
+- Demo video (≤5 min) with voiceover: _link supplied alongside submission_.
+- Improvement notes and reflections: this document plus inline comments track follow-up ideas.
+
+# Page & Feature Guide
+
+## OmniBrew
+- **Purpose:** Interactive prompt lab that lets reviewers craft system + user prompts, submit them to OmniBAR, and inspect both the LLM reply and the judge’s scoring output.
+- **Modes:** Dropdown toggles between inherited mode, forced mock, and forced live. Live mode invokes OpenAI; mock mode returns deterministic demo strings.
+- **Outputs:** Displays assistant reply, barista note, score, latency, and token usage per run. Aggregates rollups for total runs, averages, and per-model stats.
+- **Log Export:** “Download log” button generates a JSON snapshot containing every run (including the OmniBAR scoring breakdown) for reproducibility and DFL review.
+
+## Control Room
 This is the launchpad for reliability evaluation.
 Run Output Benchmarks – Execute curated suites to capture fresh snapshots.
 Schedule Reliability Review – Export or automate recurring benchmark reviews.
@@ -58,6 +143,11 @@ Judge Feedback: Actionable notes from the evaluator (e.g., regex guard improveme
 
 Turns experimentation into evidence. Teams can justify prompt changes with data, see why one strategy beats another, and iterate systematically.
 
+# Runs
+- **Audit log:** Tracks every benchmark suite execution (including smoke tests). Displays suite label, successes/failures, thresholds, and timestamps.
+- **Actions:** Buttons to clear the stored history and to trigger the LLM smoke test (useful for verifying API connectivity before a full run).
+- **Cards:** Quick stats summarizing total runs, last run details, and failures flagged across history.
+
 For developers: Latency, cost, and regression metrics are surfaced clearly.
 For scientists and non-devs: Raw JSON outputs are accessible without needing to touch the backend.
 For teams: Establishes a standardized, transparent workflow for evaluating AI agents at scale.
@@ -86,4 +176,3 @@ Frontend polish (React + Zustand + shadcn, responsive dashboards).
 User-centric design (JSON Inspector, Judge Feedback, Threshold controls).
 
 It’s designed to help teams measure and compare agent performance with facts. Latency, cost, accuracy, completeness and make those results easy to inspect, share, and act on.
-

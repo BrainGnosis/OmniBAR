@@ -1,5 +1,5 @@
 import { ChangeEvent, FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
-import { ArrowPathIcon, BoltIcon, DocumentTextIcon } from '@heroicons/react/24/outline';
+import { ArrowPathIcon, BoltIcon, DocumentTextIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline';
 
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -129,6 +129,63 @@ export default function OmniBrew() {
       console.error(err);
     }
   }, []);
+
+  const handleDownloadLog = () => {
+    if (runs.length === 0) return;
+    const generatedAt = new Date().toISOString();
+    const header = [
+      'id',
+      'created_at',
+      'mode',
+      'model',
+      'score',
+      'latency_ms',
+      'system_prompt',
+      'user_prompt',
+      'response',
+      'baristas_note',
+      'prompt_tokens',
+      'completion_tokens',
+      'total_tokens',
+      'scoring_breakdown'
+    ];
+    const quote = (value: unknown) => {
+      const str = value === null || value === undefined ? '' : String(value);
+      return `"${str.replace(/"/g, '""')}"`;
+    };
+    const rows = runs.map((run) =>
+      [
+        run.id,
+        run.created_at,
+        run.mock_run ? 'mock' : 'live',
+        run.model,
+        run.score,
+        run.latency_ms,
+        run.system_prompt,
+        run.user_prompt,
+        run.response,
+        run.baristas_note,
+        run.prompt_tokens ?? '',
+        run.completion_tokens ?? '',
+        run.total_tokens ?? '',
+        JSON.stringify(run.scoring_breakdown)
+      ].map(quote).join(',')
+    );
+    const csv = [
+      `# OmniBrew run log exported ${generatedAt} (${isMockMode ? 'mock' : 'live'} mode)`,
+      header.join(','),
+      ...rows
+    ].join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `omnibrew-run-log-${generatedAt.replace(/[:.]/g, '-')}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -358,15 +415,28 @@ export default function OmniBrew() {
       </div>
 
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between gap-4">
           <div>
             <CardTitle>Run history</CardTitle>
             <CardDescription>Every latte scored by OmniBAR, newest first.</CardDescription>
           </div>
-          <Badge variant="outline" className="gap-1">
-            <BoltIcon className="h-4 w-4" />
-            {isMockMode ? 'Mock brewing' : 'Live brewing'}
-          </Badge>
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="outline" className="gap-1">
+              <BoltIcon className="h-4 w-4" />
+              {isMockMode ? 'Mock brewing' : 'Live brewing'}
+            </Badge>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              className="gap-2"
+              onClick={handleDownloadLog}
+              disabled={runs.length === 0}
+            >
+              <ArrowDownTrayIcon className="h-4 w-4" />
+              Download log
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
           {runs.length === 0 && (
