@@ -1,5 +1,4 @@
 import { http, HttpResponse } from 'msw';
-import { v4 as uuid } from 'uuid';
 
 import type {
   AgentInput,
@@ -9,13 +8,20 @@ import type {
   BenchmarkRow,
 } from '@/types';
 
+function generateId(): string {
+  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) {
+    return crypto.randomUUID();
+  }
+  return `mock-${Math.random().toString(16).slice(2, 10)}-${Date.now().toString(16)}`;
+}
+
 const benchmarkRows: BenchmarkRow[] = [
-  { id: uuid(), name: 'Addition Accuracy', iterations: 10, successRate: 0.95, lastUpdated: new Date().toISOString(), status: 'passing' },
-  { id: uuid(), name: 'Multiplication Coverage', iterations: 12, successRate: 0.58, lastUpdated: new Date().toISOString(), status: 'failing' },
-  { id: uuid(), name: 'Division Guardrail', iterations: 8, successRate: 0.72, lastUpdated: new Date().toISOString(), status: 'monitor' },
-  { id: uuid(), name: 'Prime Detection', iterations: 15, successRate: 0.88, lastUpdated: new Date().toISOString(), status: 'passing' },
-  { id: uuid(), name: 'Modulo Edge Cases', iterations: 6, successRate: 0.42, lastUpdated: new Date().toISOString(), status: 'failing' },
-  { id: uuid(), name: 'Floating Point Stability', iterations: 9, successRate: 0.63, lastUpdated: new Date().toISOString(), status: 'monitor' },
+  { id: generateId(), name: 'Addition Accuracy', iterations: 10, successRate: 0.95, lastUpdated: new Date().toISOString(), status: 'passing' },
+  { id: generateId(), name: 'Multiplication Coverage', iterations: 12, successRate: 0.58, lastUpdated: new Date().toISOString(), status: 'failing' },
+  { id: generateId(), name: 'Division Guardrail', iterations: 8, successRate: 0.72, lastUpdated: new Date().toISOString(), status: 'monitor' },
+  { id: generateId(), name: 'Prime Detection', iterations: 15, successRate: 0.88, lastUpdated: new Date().toISOString(), status: 'passing' },
+  { id: generateId(), name: 'Modulo Edge Cases', iterations: 6, successRate: 0.42, lastUpdated: new Date().toISOString(), status: 'failing' },
+  { id: generateId(), name: 'Floating Point Stability', iterations: 9, successRate: 0.63, lastUpdated: new Date().toISOString(), status: 'monitor' },
 ];
 
 const runHistory: RunRecord[] = [];
@@ -25,7 +31,7 @@ function evaluateObjectives(input: AgentInput, output: AgentOutput): ObjectiveRe
   const objectives: ObjectiveResult[] = [];
 
   objectives.push({
-    id: uuid(),
+    id: generateId(),
     name: 'Exact answer match',
     kind: 'stringEquals',
     pass: output.answer === expected,
@@ -34,7 +40,7 @@ function evaluateObjectives(input: AgentInput, output: AgentOutput): ObjectiveRe
 
   const regex = /^(Adding|Multiplying) \d+ .* = \d+$/;
   objectives.push({
-    id: uuid(),
+    id: generateId(),
     name: 'Explanation format',
     kind: 'regexMatch',
     pass: regex.test(output.explanation),
@@ -78,7 +84,7 @@ export const handlers = [
     const objectives = evaluateObjectives(input, output);
     const combinedPass = output.status === 'success' && objectives.every((objective) => objective.pass);
     const record: RunRecord = {
-      id: uuid(),
+      id: generateId(),
       input,
       output,
       objectives,

@@ -22,5 +22,9 @@ export default defineConfig({
     port: 5173,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      VITE_ENABLE_MSW: 'false',
+      VITE_OMNIBREW_ENV: 'mock',
+    },
   },
 });
