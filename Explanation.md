@@ -4,28 +4,43 @@
 This project extends the open-source OmniBAR framework with a full Reliability Console: a frontend dashboard and backend APIs that make benchmarking and observability accessible to both developers and scientists.
 The goal is to provide transparent, reproducible insights into how AI agents perform across reliability dimensions (latency, cost, accuracy, completeness, etc.), and to make raw outputs accessible without digging into backend logs.
 
-### Setup & Run Instructions
+### Run the Reliability Console Locally
 
-1. **Clone & bootstrap**
+- **Clone & bootstrap**
    ```bash
-   git clone https://github.com/BrainGnosis/OmniBAR.git
+   git clone https://github.com/AshB4/OmniBAR
    cd OmniBAR
    python3 -m venv .venv && source .venv/bin/activate
-   pip install -e .[dev]
-   ```
-2. **Backend**
-   ```bash
-   export MOCK_MODE=true            # flip to false for live scoring
-   export OPENAI_API_KEY="sk-..."   # required only when MOCK_MODE=false
-   python -m uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000
-   ```
-3. **Frontend**
-   ```bash
-   cd frontend
-   npm install
-   VITE_API_BASE_URL="http://localhost:8000" npm run dev
-   ```
-4. Visit <http://localhost:5173>. Start in mock mode to verify wiring, then switch OmniBrew’s dropdown to live mode once the OpenAI key responds.
+  pip install -r requirements.txt 
+  *or to develop further*
+  pip install -e .[dev]
+  ```
+- **Create secrets**
+  ```bash
+  cp backend/.env.example backend/.env
+  # edit backend/.env and add your OPENAI_API_KEY (keep MOCK_MODE=true for mock runs)
+  ```
+- **Backend**
+  ```bash
+  python -m uvicorn backend.app:app --reload --host 0.0.0.0 --port 8000
+  #Use python -m so it works from any directory and binds to 0.0.0.0, making it accessible if you’re running in Docker or WSL.
+  ```
+
+   **For A More  Robust Experince **
+  - API docs: Swagger UI at <http://localhost:8000/docs>, ReDoc at <http://localhost:8000/redoc>.
+  - Pretty-print JSON responses (e.g., OmniBrew log downloads) with the [JSON Viewer Pro](https://chromewebstore.google.com/detail/json-viewer-pro/eifflpmocdbdmepbjaopkkhbfmdgijcc) browser extension.
+
+- **Frontend**
+  ```bash
+  cd frontend
+  npm install
+  npm run dev
+  ```
+- **Browser**
+  - Visit <http://localhost:5173>. Start in mock mode to confirm wiring, then switch OmniBrew’s dropdown to live mode once the OpenAI key is set.
+  - Start in mock mode to verify wiring.
+  - Switch OmniBrew’s dropdown to live mode once your OpenAI key is set.
+
 
 ### Assumptions
 
@@ -63,7 +78,7 @@ The goal is to provide transparent, reproducible insights into how AI agents per
 
 - No hosted deployment IaC/scripts—assignment stressed local execution.
 - No role-based access control or multi-tenant separation to keep the stack lightweight.
-- No async queues for long-running suites; synthetic benchmark payloads keep latency low.
+- No async queues for long-running suites; synthetic benchmark payloads keep latency low. Maybe, I'll tackle long running suits in a diffrent version.
 - Demo video hosted separately to avoid bloating the repository.
 
 ### Tests & Improvement Notes
@@ -87,7 +102,7 @@ This project was built with BrainGnosis’ UI principles in mind:
 
 ### Demo & Supporting Assets
 
-- Demo video (≤5 min) with voiceover: _link supplied alongside submission_.
+- [Demo video (≤5 min) with voiceover](https://www.youtube.com/watch?v=1mEUYETDSjM)
 - Improvement notes and reflections: this document plus inline comments track follow-up ideas.
 
 # Page & Feature Guide
@@ -160,24 +175,6 @@ Turns experimentation into evidence. Teams can justify prompt changes with data,
 For developers: Latency, cost, and regression metrics are surfaced clearly.
 For scientists and non-devs: Raw JSON outputs are accessible without needing to touch the backend.
 For teams: Establishes a standardized, transparent workflow for evaluating AI agents at scale.
-
-⚙️ Quickstart
-# Clone the repo
-git clone https://github.com/AshB4/OmniBAR.git
-cd OmniBAR
-
-# Backend setup
-python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn backend.app:app --reload
-
-# Frontend setup
-cd frontend
-npm install
-
-# Run Frontend
-npm run dev
-Then open: http://localhost:5173
 
 This Reliability Console demonstrates full-stack craftsmanship:
 Backend orchestration (FastAPI endpoints, snapshot persistence, health checks).
