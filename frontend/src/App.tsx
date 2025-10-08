@@ -5,7 +5,7 @@ import ControlRoom from './pages/ControlRoom';
 import Benchmarks from './pages/Benchmarks';
 import Runs from './pages/Runs';
 import DocumentExtraction from './pages/DocumentExtraction';
-import LatteLab from './pages/LatteLab';
+import OmniBrew from './pages/OmniBrew';
 
 export default function App() {
   const [route, setRoute] = useState<AppRoute>('control');
@@ -19,7 +19,7 @@ export default function App() {
       case 'documents':
         return <DocumentExtraction />;
       case 'latte':
-        return <LatteLab />;
+        return <OmniBrew />;
       case 'control':
       default:
         return <ControlRoom />;

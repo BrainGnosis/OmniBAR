@@ -14,7 +14,7 @@ const activeClientIds = new Set()
 
 addEventListener('install', function () {
   self.skipWaiting()
-})
+}) 
 
 addEventListener('activate', function (event) {
   event.waitUntil(self.clients.claim())

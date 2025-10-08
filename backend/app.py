@@ -11,6 +11,7 @@ from fastapi import Depends, FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 try:
     from .config import get_settings
@@ -42,11 +43,20 @@ except ImportError:  # pragma: no cover - direct execution fallback
 
 settings = get_settings()
 
-app = FastAPI(title="Latte Lab", version="0.1.0", description="Prompt Trace Scoring with OmniBAR")
+app = FastAPI(
+    title="OmniBrew", version="0.1.0", description="Prompt Trace Scoring with OmniBAR"
+)
+
+origins = list(
+    dict.fromkeys(
+        (settings.allow_origins or [])
+        + ["http://localhost:5173", "http://127.0.0.1:5173"]
+    )
+)
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.allow_origins,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -189,7 +199,9 @@ def _generate_history_slice(success_rate: float) -> list[dict[str, Any]]:
     for step in range(3):
         entries.append(
             {
-                "timestamp": (now - timedelta(minutes=step * 5)).replace(microsecond=0).isoformat(),
+                "timestamp": (now - timedelta(minutes=step * 5))
+                .replace(microsecond=0)
+                .isoformat(),
                 "objective": f"Check {step + 1}",
                 "result": success_rate > 0.5 or step < 1,
                 "message": "Objective evaluated via OmniBAR mock snapshot.",
@@ -198,7 +210,9 @@ def _generate_history_slice(success_rate: float) -> list[dict[str, Any]]:
     return entries
 
 
-def _generate_suite_payload(suite: str, threshold: float | None = None) -> dict[str, Any]:
+def _generate_suite_payload(
+    suite: str, threshold: float | None = None
+) -> dict[str, Any]:
     now = datetime.now(UTC)
     benchmarks: list[dict[str, Any]] = []
     failure_insights: list[dict[str, Any]] = []
@@ -250,7 +264,9 @@ def _generate_suite_payload(suite: str, threshold: float | None = None) -> dict[
                     "failureRate": round(1 - success_rate, 3),
                     "lastFailureAt": now.isoformat(),
                     "topIssues": [
-                        template.get("failure_reason", "Observed deviation in latest run."),
+                        template.get(
+                            "failure_reason", "Observed deviation in latest run."
+                        ),
                         "Requires operator follow-up.",
                     ],
                     "recommendedFix": "Review prompt strategy and re-run targeted objectives.",
@@ -317,7 +333,9 @@ MAX_HISTORY = 30
 CURRENT_SNAPSHOT = _generate_suite_payload("output")
 
 
-def _record_suite_run(suite: str, payload: dict[str, Any], threshold: float | None) -> dict[str, Any]:
+def _record_suite_run(
+    suite: str, payload: dict[str, Any], threshold: float | None
+) -> dict[str, Any]:
     summary = payload["summary"]
     entry = {
         "id": str(uuid4()),
@@ -353,7 +371,7 @@ def get_db():
 
 @app.get("/", tags=["meta"])
 def root() -> dict[str, str]:
-    return {"message": "Welcome to Latte Lab"}
+    return {"message": "Welcome to OmniBrew"}
 
 
 @app.get("/config", response_model=ConfigResponse, tags=["meta"])
@@ -367,8 +385,12 @@ def read_config() -> ConfigResponse:
     )
 
 
-@app.post("/lattes", response_model=LatteRunDetailResponse, tags=["lattes"], status_code=201)
-def create_latte(payload: LatteCreateRequest, db: Session = Depends(get_db)) -> LatteRun:
+@app.post(
+    "/lattes", response_model=LatteRunDetailResponse, tags=["lattes"], status_code=201
+)
+def create_latte(
+    payload: LatteCreateRequest, db: Session = Depends(get_db)
+) -> LatteRun:
     if not payload.system_prompt.strip():
         raise HTTPException(status_code=400, detail="System prompt is required")
     if not payload.user_prompt.strip():

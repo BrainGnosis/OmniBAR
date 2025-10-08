@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { id: 'benchmarks', label: 'Benchmarks' },
   { id: 'runs', label: 'Runs' },
   { id: 'documents', label: 'Doc Extraction' },
-  { id: 'latte', label: 'Latte Lab' },
+  { id: 'latte', label: 'OmniBrew' },
 ] as const;
 
 type Route = typeof NAV_ITEMS[number]['id'];
@@ -62,6 +62,8 @@ export default function AppShell({ route, onNavigate, children }: AppShellProps)
     };
   })();
 
+  const showEnvironmentBadge = environment.variant !== 'success';
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <a
@@ -74,9 +76,11 @@ export default function AppShell({ route, onNavigate, children }: AppShellProps)
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-xl font-semibold">OmniBAR • Agent Reliability Studio</h1>
           <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-4">
-            <Badge variant={environment.variant} title={environment.description}>
-              {environment.label}
-            </Badge>
+            {showEnvironmentBadge ? (
+              <Badge variant={environment.variant} title={environment.description}>
+                {environment.label}
+              </Badge>
+            ) : null}
             <nav className="flex items-center gap-3 text-sm font-medium">
               {NAV_ITEMS.map((item) => (
                 <button

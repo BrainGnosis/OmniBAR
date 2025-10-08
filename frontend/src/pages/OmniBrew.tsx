@@ -71,7 +71,7 @@ const FALLBACK_ROLLUPS: LatteRollups = {
 const formatDateTime = (value: string) => new Date(value).toLocaleString();
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`;
 
-export default function LatteLab() {
+export default function OmniBrew() {
   const [config, setConfig] = useState<LatteConfig | null>(null);
   const [form, setForm] = useState<FormState>({
     systemPrompt: DEFAULT_SYSTEM_PROMPT,
@@ -117,6 +117,8 @@ export default function LatteLab() {
     }
     return config.mock_mode;
   }, [config, form.mock]);
+
+  const isLiveMode = useMemo(() => !isMockMode, [isMockMode]);
 
   const refreshData = useCallback(async () => {
     try {
@@ -178,10 +180,11 @@ export default function LatteLab() {
     <div className="space-y-6">
       <header className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <h2 className="text-3xl font-semibold tracking-tight">Latte Lab</h2>
+          <h2 className="text-3xl font-semibold tracking-tight">OmniBrew</h2>
   <LatteLogo />
 
           {isMockMode && <Badge>Mock mode</Badge>}
+          {isLiveMode && <Badge>Live mode</Badge>}
         </div>
         <p className="text-muted-foreground">
           Craft prompt traces, send them to OmniBAR, and track scoring history without leaving the studio.
@@ -297,7 +300,7 @@ export default function LatteLab() {
               </div>
               <Button type="submit" disabled={loading} className="flex items-center gap-2">
                 {loading && <ArrowPathIcon className="h-4 w-4 animate-spin" />}
-                {loading ? 'Brewing…' : 'Brew latte run'}
+                {loading ? 'Brewing…' : 'OmniBrew run'}
               </Button>
             </form>
           </CardContent>

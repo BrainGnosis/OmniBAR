@@ -47,7 +47,9 @@ class LatteJudgeObjective(LLMJudgeObjective):
         else:
             prompt = self.prompt
 
-        llm = ChatOpenAI(model=self.scoring_model, temperature=0, max_retries=2, api_key=self.api_key)
+        llm = ChatOpenAI(
+            model=self.scoring_model, temperature=0, max_retries=2, api_key=self.api_key
+        )
         chain = prompt | llm | self._output_parser
         return chain
 
@@ -55,7 +57,9 @@ class LatteJudgeObjective(LLMJudgeObjective):
 def _mock_score(response: str, user_prompt: str) -> ScoreResult:
     word_count = len(response.split())
     uniqueness = len(set(response.lower().split()))
-    score = 0.4 + 0.6 * (math.tanh(word_count / 75) * 0.6 + math.tanh(uniqueness / 60) * 0.4)
+    score = 0.4 + 0.6 * (
+        math.tanh(word_count / 75) * 0.6 + math.tanh(uniqueness / 60) * 0.4
+    )
     score = max(0.0, min(1.0, score))
     note = (
         "Mock scoring estimates quality based on response richness."
@@ -98,10 +102,11 @@ def evaluate_with_omnibar(
         api_key=settings.openai_api_key,
         valid_eval_result_type=FloatEvalResult,
         prompt=(
-            "You are OmniBAR judging drinks in Latte Lab."
-            " Rate the assistant's reply according to the expected output below."
-            " Provide a JSON object with 'result' (0-1) and 'message' explaining the rationale."
-            " Keep the note energetic but professional."
+            "You are OmniBAR judging drinks in OmniBrew.\n"
+            "Use the guidance in {expected_output} to score the assistant's reply below (0-1 scale).\n"
+            "Assistant reply:\n{input}\n"
+            "Respond with JSON that follows these instructions:\n{format_instructions}\n"
+            "Keep the message energetic but professional."
         ),
     )
 
@@ -131,7 +136,9 @@ def evaluate_with_omnibar(
         }
     else:
         score = getattr(eval_result, "result", 0.0) or 0.0
-        note = getattr(eval_result, "message", "OmniBAR returned an unexpected result type.")
+        note = getattr(
+            eval_result, "message", "OmniBAR returned an unexpected result type."
+        )
         breakdown = {
             "mode": "omnibar",
             "raw_type": type(eval_result).__name__,

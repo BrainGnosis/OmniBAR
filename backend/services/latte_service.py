@@ -31,7 +31,7 @@ def _invoke_llm(
 ) -> tuple[str, dict[str, Any], int]:
     if mock_mode or not settings.openai_api_key:
         response = (
-            "☕️ Mock Latte coming right up! Here's a friendly reply based on your prompt: "
+            "☕️ Mock Brew coming right up! Here's a friendly reply based on your prompt: "
             f"{user_prompt.strip()}"
         )
         token_count = len(response.split())
@@ -41,7 +41,12 @@ def _invoke_llm(
         }
         return response, metadata, 0
 
-    chat = ChatOpenAI(model=model, temperature=temperature, api_key=settings.openai_api_key, max_retries=2)
+    chat = ChatOpenAI(
+        model=model,
+        temperature=temperature,
+        api_key=settings.openai_api_key,
+        max_retries=2,
+    )
     start = time.perf_counter()
     ai_message = chat.invoke(
         [
@@ -62,7 +67,9 @@ def _invoke_llm(
     return ai_message.content, token_usage, latency_ms
 
 
-def create_latte_run(db: Session, payload: LatteCreateRequest, settings: Settings | None = None) -> LatteRun:
+def create_latte_run(
+    db: Session, payload: LatteCreateRequest, settings: Settings | None = None
+) -> LatteRun:
     settings = settings or get_settings()
     effective_mock = settings.mock_mode if payload.mock is None else payload.mock
     effective_settings = settings.model_copy(update={"mock_mode": effective_mock})
@@ -83,9 +90,17 @@ def create_latte_run(db: Session, payload: LatteCreateRequest, settings: Setting
         settings=effective_settings,
     )
 
-    prompt_tokens = llm_metadata.get("prompt_tokens") if isinstance(llm_metadata, dict) else None
-    completion_tokens = llm_metadata.get("completion_tokens") if isinstance(llm_metadata, dict) else None
-    total_tokens = llm_metadata.get("total_tokens") if isinstance(llm_metadata, dict) else None
+    prompt_tokens = (
+        llm_metadata.get("prompt_tokens") if isinstance(llm_metadata, dict) else None
+    )
+    completion_tokens = (
+        llm_metadata.get("completion_tokens")
+        if isinstance(llm_metadata, dict)
+        else None
+    )
+    total_tokens = (
+        llm_metadata.get("total_tokens") if isinstance(llm_metadata, dict) else None
+    )
 
     run = LatteRun(
         created_at=datetime.now(timezone.utc),
@@ -111,17 +126,16 @@ def create_latte_run(db: Session, payload: LatteCreateRequest, settings: Setting
 
 
 def fetch_runs(db: Session) -> list[LatteRun]:
-    return (
-        db.query(LatteRun)
-        .order_by(LatteRun.created_at.desc())
-        .all()
-    )
+    return db.query(LatteRun).order_by(LatteRun.created_at.desc()).all()
 
 
 def get_rollups(db: Session) -> LatteRollupResponse:
     total_runs = db.query(func.count(LatteRun.id)).scalar() or 0
     average_score = db.query(func.avg(LatteRun.score)).scalar() or 0.0
-    mock_runs = db.query(func.count(LatteRun.id)).filter(LatteRun.mock_run.is_(True)).scalar() or 0
+    mock_runs = (
+        db.query(func.count(LatteRun.id)).filter(LatteRun.mock_run.is_(True)).scalar()
+        or 0
+    )
 
     model_stats: list[LatteRollupModelStats] = []
     for model_name, avg_score, count, last_run in (
@@ -163,7 +177,10 @@ def get_rollups(db: Session) -> LatteRollupResponse:
 
     success_rate = 0.0
     if total_runs:
-        success_count = db.query(func.count(LatteRun.id)).filter(LatteRun.score >= 0.8).scalar() or 0
+        success_count = (
+            db.query(func.count(LatteRun.id)).filter(LatteRun.score >= 0.8).scalar()
+            or 0
+        )
         success_rate = float(success_count) / float(total_runs)
 
     return LatteRollupResponse(
