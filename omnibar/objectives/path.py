@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from typing import Dict, Any, List, Type, Tuple
 from pydantic import Field, model_validator, BaseModel, ValidationError
 from abc import ABC, abstractmethod

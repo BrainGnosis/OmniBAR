@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Utility functions for inventory system state validation and schema creation.
 

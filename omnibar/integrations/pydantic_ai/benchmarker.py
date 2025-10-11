@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from typing import Dict, Any
 from omnibar.core.benchmarker import OmniBarmarker
 

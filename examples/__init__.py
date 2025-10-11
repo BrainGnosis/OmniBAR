@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Example usage patterns for OmniBAR.
 

@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Core benchmarking components.
 

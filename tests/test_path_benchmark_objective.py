@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test suite for PathBenchmarkObjective classes.
 Tests PathEqualityObjective with multiple valid paths and rich terminal feedback.

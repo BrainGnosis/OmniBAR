@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Real LangChain integration test suite for LLMJudgeObjective class.
 Tests LLM-based evaluation with actual OpenAI API calls and real AI agents.

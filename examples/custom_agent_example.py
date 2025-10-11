@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Custom Agent Example (Framework-Agnostic)
 ========================================

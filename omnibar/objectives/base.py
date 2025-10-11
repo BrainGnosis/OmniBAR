@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from pydantic import BaseModel, Field
 from typing import Any, Callable, Dict, Type, List
 from uuid import UUID

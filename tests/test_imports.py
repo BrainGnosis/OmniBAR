@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Quick test to verify that all import paths work correctly with the new package structure.
 """

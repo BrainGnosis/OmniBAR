@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from typing import Callable, Dict, Any, Type
 from pydantic import Field, model_validator
 from omnibar.objectives.base import BaseBenchmarkObjective

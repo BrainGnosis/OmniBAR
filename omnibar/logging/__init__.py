@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive logging system for benchmark operations.
 

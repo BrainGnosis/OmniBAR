@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Test script to verify the auto-evaluator assignment functionality in OmniBarmarker.
 """

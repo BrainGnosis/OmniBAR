@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test suite for OutputBenchmarkObjective classes.
 Tests StringEqualityObjective and RegexMatchObjective with rich terminal feedback.

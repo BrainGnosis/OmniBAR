@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Complex Multi-Location Crisis Management Benchmark using gpt-4 LangChain Agent.
 

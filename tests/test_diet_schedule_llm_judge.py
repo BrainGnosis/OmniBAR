@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test of OmniBarmarker with LangChain agents and LLM-as-a-judge objectives.
 Tests diet schedule generation with OpenAI and Anthropic models, using LLM judges for evaluation.

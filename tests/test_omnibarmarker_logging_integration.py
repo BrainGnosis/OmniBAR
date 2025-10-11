@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Simple example showing how to use OmniBarmarker with integrated logging,
 particularly demonstrating combined objective handling.

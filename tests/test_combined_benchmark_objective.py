@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test suite for CombinedBenchmarkObjective class.
 Tests combining multiple benchmark objectives with both sync and async functionality.

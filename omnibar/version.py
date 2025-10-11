@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """Version information for OmniBAR."""
 
 __version__ = "0.1.2"

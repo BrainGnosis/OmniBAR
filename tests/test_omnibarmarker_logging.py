@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Test script demonstrating the OmniBarmarker with integrated logging,
 specifically showing how combined objectives are handled with separate logs

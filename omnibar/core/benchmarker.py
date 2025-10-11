@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from typing import Dict, Any, Callable, List, Optional
 from pydantic import BaseModel, PrivateAttr, ConfigDict, Field
 import json

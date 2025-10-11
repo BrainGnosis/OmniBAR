@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Real Pydantic AI integration test suite for LLMJudgeObjective class.
 Tests advanced LLM-based evaluation with actual Pydantic AI API calls and real AI agents.

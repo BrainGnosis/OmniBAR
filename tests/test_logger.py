@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test suite for BenchmarkLogger and related classes.
 Tests LogEntry, BenchmarkLog, and BenchmarkLogger with rich terminal feedback.

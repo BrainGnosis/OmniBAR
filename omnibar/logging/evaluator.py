@@ -1,3 +1,5 @@
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 from pydantic import BaseModel
 from typing import Any, Dict, List, TYPE_CHECKING
 import warnings

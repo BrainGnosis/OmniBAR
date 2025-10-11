@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2023 BrainGnosis Inc. All rights reserved.
+
 """
 Comprehensive test suite for OmniBarmarker class.
 Tests the unified async/sync functionality, benchmark execution, and agent invocation.
