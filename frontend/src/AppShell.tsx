@@ -1,7 +1,8 @@
 import { ReactNode } from 'react';
 
-import { Badge } from '@/components/ui/badge';
 import { Footer } from '@/components/layout/Footer';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import { Badge } from '@/components/ui/badge';
 
 const NAV_ITEMS = [
   { id: 'control', label: 'Control Room' },
@@ -9,6 +10,7 @@ const NAV_ITEMS = [
   { id: 'runs', label: 'Runs' },
   { id: 'documents', label: 'Doc Extraction' },
   { id: 'latte', label: 'OmniBrew' },
+  { id: 'chat', label: 'Chat' },
 ] as const;
 
 type Route = typeof NAV_ITEMS[number]['id'];
@@ -81,6 +83,7 @@ export default function AppShell({ route, onNavigate, children }: AppShellProps)
                 {environment.label}
               </Badge>
             ) : null}
+            <ThemeToggle className="w-full sm:w-auto" />
             <nav className="flex items-center gap-3 text-sm font-medium">
               {NAV_ITEMS.map((item) => (
                 <button

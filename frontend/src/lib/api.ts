@@ -121,3 +121,14 @@ export async function createLatteRun(payload: LatteCreatePayload): Promise<Latte
   });
   return handleResponse<LatteRun>(response);
 }
+
+export async function sendChatMessage(message: string): Promise<{ response: string }> {
+  const response = await fetch(`${API_BASE}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ message }),
+  });
+  return handleResponse<{ response: string }>(response);
+}

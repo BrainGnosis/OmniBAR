@@ -12,6 +12,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from fastapi.middleware.cors import CORSMiddleware
+from langchain_openai import ChatOpenAI
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+from fastapi.middleware.cors import CORSMiddleware
 
 try:
     from .config import get_settings
@@ -426,6 +430,10 @@ class BenchmarkRunRequest(BaseModel):
     threshold: float | None = None
 
 
+class ChatRequest(BaseModel):
+    message: str
+
+
 @app.get("/benchmarks", tags=["benchmarks"])
 def get_benchmarks_snapshot() -> list[dict[str, Any]]:
     global CURRENT_SNAPSHOT
@@ -487,3 +495,23 @@ def get_run_history() -> list[dict[str, Any]]:
 def clear_run_history() -> dict[str, str]:
     RUN_HISTORY.clear()
     return {"message": "Run history cleared"}
+
+
+@app.post("/chat", tags=["chat"])
+def chat_with_opencode(request: ChatRequest) -> dict[str, str]:
+    if settings.mock_mode or not settings.openai_api_key:
+        # Mock response
+        response = f"Opencode says: {request.message[::-1]}"
+    else:
+        # Use OpenAI
+        llm = ChatOpenAI(
+            model=settings.default_model,
+            api_key=settings.openai_api_key,
+            temperature=settings.temperature,
+        )
+        try:
+            ai_response = llm.invoke(request.message)
+            response = ai_response.content
+        except Exception as e:
+            response = f"Error: {str(e)}"
+    return {"response": response}

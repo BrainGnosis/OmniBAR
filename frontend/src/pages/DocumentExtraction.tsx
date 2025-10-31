@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { JsonPanel } from '@/components/JsonPanel';
+import { TrustCompass } from '@/components/TrustCompass';
 import { cn } from '@/lib/utils';
 import { getStoredThreshold } from '@/lib/threshold';
 
@@ -416,33 +417,39 @@ export default function DocumentExtraction() {
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Quality Radar</CardTitle>
-              <CardDescription>Granular capability scores for this iteration.</CardDescription>
-            </CardHeader>
-            <CardContent style={{ height: 320 }}>
-              {(metadata.radar ?? []).length ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <RadarChart data={metadata.radar} outerRadius="75%">
-                    <PolarGrid stroke="hsl(var(--muted-foreground))" strokeOpacity={0.4} />
-                    <PolarAngleAxis dataKey="metric" tick={{ fontSize: 11 }} />
-                    <PolarRadiusAxis tickFormatter={(value) => `${Math.round(value * 100)}%`} domain={[0, 1]} tickCount={5} />
-                    <Radar
-                      name="Score"
-                      dataKey="value"
-                      stroke="hsl(var(--accent))"
-                      fill="hsl(var(--accent))"
-                      fillOpacity={0.3}
-                    />
-                    <RadarTooltip formatter={(value: number) => `${Math.round((value as number) * 100)}%`} />
-                  </RadarChart>
-                </ResponsiveContainer>
-              ) : (
-                <p className="text-sm text-muted-foreground">No radar data for this iteration.</p>
-              )}
-            </CardContent>
-          </Card>
+           <Card>
+             <CardHeader>
+               <CardTitle>Trust Compass</CardTitle>
+               <CardDescription>4-axis radial graph inspired by BoxerLogic: Faithfulness, Reliability, Coherence, Adaptability.</CardDescription>
+             </CardHeader>
+             <CardContent style={{ height: 320 }}>
+               <TrustCompass
+                 scores={{
+                   faithfulness: activeData.scores.accuracy,
+                   reliability: activeData.scores.completeness,
+                   coherence: activeData.scores.structure,
+                   adaptability: activeData.scores.content,
+                 }}
+               />
+             </CardContent>
+           </Card>
+
+           <Card>
+             <CardHeader>
+               <CardTitle>Trust Compass</CardTitle>
+               <CardDescription>4-axis radial graph inspired by BoxerLogic: Faithfulness, Reliability, Coherence, Adaptability.</CardDescription>
+             </CardHeader>
+             <CardContent style={{ height: 320 }}>
+               <TrustCompass
+                 scores={{
+                   faithfulness: activeData.scores.accuracy,
+                   reliability: activeData.scores.completeness,
+                   coherence: activeData.scores.structure,
+                   adaptability: activeData.scores.content,
+                 }}
+               />
+             </CardContent>
+           </Card>
 
           <Card>
             <CardHeader>

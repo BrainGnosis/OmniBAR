@@ -6,6 +6,7 @@ import Benchmarks from './pages/Benchmarks';
 import Runs from './pages/Runs';
 import DocumentExtraction from './pages/DocumentExtraction';
 import OmniBrew from './pages/OmniBrew';
+import Chat from './pages/Chat';
 
 export default function App() {
   const [route, setRoute] = useState<AppRoute>('control');
@@ -20,6 +21,8 @@ export default function App() {
         return <DocumentExtraction />;
       case 'latte':
         return <OmniBrew />;
+      case 'chat':
+        return <Chat />;
       case 'control':
       default:
         return <ControlRoom />;
